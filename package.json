@@ -1,0 +1,31 @@
+{
+  "name": "mspApp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "lint": "eslint src/",
+    "test": "mocha --compilers js:babel-core/register  --require ./test/test.helper.js  --recursive",
+    "test:watch": "npm run test -- --watch"
+  },
+  "dependencies": {
+    "babel-eslint": "^4.1.6",
+    "es6-symbol": "^3.0.2",
+    "eslint": "^1.10.3",
+    "eslint-plugin-babel": "^3.0.0",
+    "eslint-plugin-react": "^3.15.0",
+    "fbjs": "^0.6.0",
+    "immutable": "^3.7.6",
+    "react-native": "^0.18.0",
+    "react-redux": "^3.1.2",
+    "redux": "^3.0.5",
+    "redux-saga": "^0.5.0"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "chai-immutable": "^1.5.3",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^3.1.0",
+    "eslint-plugin-react": "^3.15.0"
+  }
+}

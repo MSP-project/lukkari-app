@@ -1,0 +1,11 @@
+{
+  "extends": "airbnb",
+  "ecmaFeatures": {
+    "restParams": true,
+    "spread": true,
+    "experimentalObjectRestSpread": true
+  },
+  "rules": {
+    "comma-dangle": 0
+  }
+}

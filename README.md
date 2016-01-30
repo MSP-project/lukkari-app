@@ -17,6 +17,10 @@ Currently application contains counter functionality. This is implemented to hel
 sdk.dir=<path/to/android-sdk>
 ```
 
+##### For map:
+* From Android SDK Manager install Google Repository, Google Play Services and Google Play APK Expansion Library.
+* And for Genymotion's emulator do this:  [Instructions](http://stackoverflow.com/questions/20121883/how-to-install-google-play-services-in-a-genymotion-vm-with-no-drag-and-drop-su/20137324#20137324)
+
 ## Run project
 `react-native run-android`
 

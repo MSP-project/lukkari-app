@@ -13,8 +13,8 @@ export default function counter(state = initialState, action = {}) {
       // Returns new immutable object with key count changed to new value
       // Temporary object for multiple changes.
       // This improves performance.
-      return state.withMutations((state) => {
-        state.set('count', state.get('count') + 1).set('processing', false)
+      return state.withMutations((oldState) => {
+        oldState.set('count', oldState.get('count') + 1).set('processing', false);
       });
     case types.DECREMENT:
       return state.set('count', state.get('count') - 1);

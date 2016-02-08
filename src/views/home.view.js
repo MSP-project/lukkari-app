@@ -23,15 +23,8 @@ class Home extends React.Component {
     return (
       <View style={ styles.container }>
         <Text style={{ marginBottom: 50 }}>This is the Home page</Text>
-        <TouchableOpacity onPress={ Actions.spaceMap }>
-          <Text
-            style={{ justifyContent: 'center', margin: 20, textAlign: 'center', color: 'blue' }}
-          > Take me to the Space Map </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={ Actions.counter }>
-          <Text
-            style={{ justifyContent: 'center', margin: 20, textAlign: 'center', color: 'blue' }}
-          > Take me to the Counter </Text>
+        <TouchableOpacity onPress={Actions.spaceMap} style={styles.button}>
+          <Text>Go to map</Text>
         </TouchableOpacity>
       </View>
     );

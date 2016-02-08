@@ -12,7 +12,7 @@ const {
 
 const styles = StyleSheet.create({
   map: {
-    marginTop: 70,
+    marginTop: 0,
     flex: 1,
     flexDirection: 'row',
   },
@@ -31,9 +31,9 @@ class SpaceMap extends React.Component {
   componentDidMount() {
     // Without timeout too quick for iOS and Android.
     // timeout 0 is ok for iOS, Android needs something longer
-    setTimeout(function () {
-      this.refs.m1.showCallout();
-    }.bind(this), 100);
+    // setTimeout(function () {
+    //   this.refs.m1.showCallout();
+    // }.bind(this), 100);
   }
 
   render() {
@@ -42,8 +42,8 @@ class SpaceMap extends React.Component {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: 60.1833,
-            longitude: 24.8333,
+            latitude: 60.1887073,
+            longitude: 24.8282191,
             latitudeDelta: 0.0222,
             longitudeDelta: 0.0121,
           }}

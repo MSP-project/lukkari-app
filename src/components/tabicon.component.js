@@ -10,7 +10,7 @@ const propTypes = {
 
 class TabIcon extends React.Component {
   render() {
-    const { selected, title } = this.props
+    const { selected, title } = this.props;
     return (
       <Text style={{ color: selected ? 'red' : 'black' }}>{ title }</Text>
     );

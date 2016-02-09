@@ -7,6 +7,7 @@ import Home from './home.view';
 
 import TabIcon from '../components/tabicon.component';
 
+
 const {
   Navigator,
   StyleSheet } = React;

@@ -61,7 +61,10 @@ class Calendar extends React.Component {
         location: 'Street Street 1'
       },
     };
+
+
     const sectionIDs = ['sectionID1', 'sectionID2'];
+    // Which rows to show
     const rowIDs = [['rowID1', 'rowID2'], ['rowID1', 'rowID2']];
 
     this.state = {

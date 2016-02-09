@@ -3,9 +3,11 @@
   "ecmaFeatures": {
     "restParams": true,
     "spread": true,
-    "experimentalObjectRestSpread": true
+    "experimentalObjectRestSpread": true,
+    'generators': true
   },
   "rules": {
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "new-cap": [2, { "capIsNewExceptions": ["List", "Map"] }]
   }
 }

@@ -1,28 +1,19 @@
-import { take, put, call } from 'redux-saga'
-import { delay } from '../services'
-import * as types from '../state/counter.actiontypes';
-import { increment, setProcessing, setNormal } from '../state/counter.action'
+import { take, put, call, fork } from 'redux-saga';
+import * as types from '../state/actiontypes';
+import { setCourseData } from '../state/app.action';
+import { get } from '../utils/api';
 
-function* incrementAsync() {
-  // This function simulates async call e.g. to external API.
-
-  while(true) {
-
-    // Wait for each INCREMENT_ASYNC action
-    yield take(types.INCREMENT_ASYNC);
-    // Set app state to processing
-    yield put( setProcessing() );
-
-    // Delay is a sample function
-    // Return a Promise that resolves after (ms) milliseconds
-    // Use call to improve testability
-    yield call(delay, 1000);
-
-    // Dispatch action INCREMENT_COUNTER with put
-    yield put( increment() );
-    yield put( setNormal() );
+function* watchCourse() {
+  while (true) {
+    // Catch action dispatch
+    yield take(types.GET_COURSE_DATA);
+    // Get data from server
+    const courseData = yield call(get);
+    // Update state
+    yield put(setCourseData(courseData));
   }
-
 }
 
-export default [incrementAsync]
+export default function* root() {
+  yield fork(watchCourse);
+}

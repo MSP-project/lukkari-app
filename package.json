@@ -16,6 +16,7 @@
     "eslint-plugin-react": "^3.15.0",
     "fbjs": "^0.6.0",
     "immutable": "^3.7.6",
+    "lodash": "^4.3.0",
     "react-native": "^0.18.0",
     "react-native-maps": "^0.2.3",
     "react-native-router-flux": "^2.1.3",

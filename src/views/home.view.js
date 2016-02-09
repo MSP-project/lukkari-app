@@ -1,13 +1,19 @@
 import React from 'react-native';
-import { Actions } from 'react-native-router-flux';
+import { connect } from 'react-redux/native';
+import { bindActionCreators } from 'redux';
 
+import * as actions from '../state/app.action';
 
 const {
-  TouchableOpacity,
   View,
   Text,
-  StyleSheet
+  StyleSheet,
+  PropTypes
 } = React;
+
+const propTypes = {
+  courseMeta: PropTypes.object.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -19,17 +25,33 @@ const styles = StyleSheet.create({
 });
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    const { getCourseData } = props;
+    getCourseData('MS-A0107');
+  }
+
   render() {
+    const { courseMeta } = this.props;
     return (
       <View style={ styles.container }>
         <Text style={{ marginBottom: 50 }}>This is the Home page</Text>
-        <TouchableOpacity onPress={Actions.spaceMap} style={styles.button}>
-          <Text>Go to map</Text>
-        </TouchableOpacity>
+        <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
+        <Text style={{ marginBottom: 5 }}>{ courseMeta.credits }</Text>
+        <Text style={{ marginBottom: 5 }}>{ courseMeta.code }</Text>
       </View>
     );
   }
 }
 
+Home.propTypes = propTypes;
 
-module.exports = Home;
+export default connect(
+  state => ({
+    courseMeta: state.selectedCourse.get('courseMeta'),
+    events: state.selectedCourse.get('events')
+  }),
+  dispatch => ({
+    ...bindActionCreators(actions, dispatch)
+  })
+)(Home);

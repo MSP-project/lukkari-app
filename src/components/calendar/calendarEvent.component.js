@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
 });
 
 class CalendarEvent extends React.Component {
-  
   render() {
     const { start, end, header } = this.props;
     return (

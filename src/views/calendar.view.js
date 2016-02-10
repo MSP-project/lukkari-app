@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 64,
+    marginBottom: 50,
     backgroundColor: 'transparent',
   }
 });
@@ -60,12 +61,62 @@ class Calendar extends React.Component {
         end: '22:00',
         location: 'Street Street 1'
       },
+      sectionID3: {
+        date: 'Thursday, 11 of February'
+      },
+      'sectionID3:rowID1': {
+        header: '1st Header for Row3',
+        start: '17:00',
+        end: '19:00',
+        location: 'Adress Street 123'
+      },
+      'sectionID3:rowID2': {
+        header: '2nd Header for Row3',
+        start: '21:00',
+        end: '22:00',
+        location: 'Adress Street 345'
+      },
+      sectionID4: {
+        date: 'Monday, 14 of February'
+      },
+      'sectionID4:rowID1': {
+        header: '1st Header for Row4',
+        start: '17:00',
+        end: '19:00',
+        location: 'Adress Street 123'
+      },
+      'sectionID4:rowID2': {
+        header: '2nd Header for Row4',
+        start: '21:00',
+        end: '22:00',
+        location: 'Adress Street 345'
+      },
+      sectionID5: {
+        date: 'Wednesday, 16 of February'
+      },
+      'sectionID5:rowID1': {
+        header: '1st Header for Row5',
+        start: '17:00',
+        end: '19:00',
+        location: 'Adress Street 123'
+      },
+      'sectionID5:rowID2': {
+        header: '2nd Header for Row5',
+        start: '21:00',
+        end: '22:00',
+        location: 'Adress Street 345'
+      },
     };
 
-
-    const sectionIDs = ['sectionID1', 'sectionID2'];
+    const sectionIDs = ['sectionID1', 'sectionID2', 'sectionID3', 'sectionID4', 'sectionID5'];
     // Which rows to show
-    const rowIDs = [['rowID1', 'rowID2'], ['rowID1', 'rowID2']];
+    const rowIDs = [
+      ['rowID1', 'rowID2'],
+      ['rowID1', 'rowID2'],
+      ['rowID1', 'rowID2'],
+      ['rowID1', 'rowID2'],
+      ['rowID1', 'rowID2']
+    ];
 
     this.state = {
       dataSource: ds.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs)

@@ -45,10 +45,17 @@ class AppView extends React.Component {
         <Route name="app" initial="home" >
           <Router footer={ TabBar } {...tabViewStyle} >
             <Route schema="tab" name="home" title="Home" component={ Home }/>
-            <Route schema="tab" name="spaceMap" title="Map" component={ SpaceView }/>
             <Route schema="tab" name="calendar" title="Calendar" component={ Calendar } />
           </Router>
         </Route>
+        <Route
+          wrapRouter
+          hideNavBar={ false }
+          schema="default"
+          name="spaceMap"
+          title="Map"
+          component={ SpaceView }
+        />
       </Router>
     );
   }

@@ -9,17 +9,36 @@ import TabIcon from '../components/tabicon.component';
 
 
 const {
-  Navigator,
-  StyleSheet } = React;
+  StyleSheet,
+  TouchableOpacity,
+  Text } = React;
 
 const styles = StyleSheet.create({
   navigationBar: {
-    backgroundColor: '#FF9900',
+    backgroundColor: 'rgba(255, 103, 31,0.9)',
     borderWidth: 0,
     borderBottomWidth: 0,
     padding: 0,
     margin: 0
   },
+  titleStyle: {
+    color: 'white',
+  },
+  backButtonStyle: {
+    tintColor: 'white',
+  },
+  barRightButton: {
+    paddingLeft: 40,
+    paddingBottom: 6,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  barRightButtonText: {
+    color: 'white',
+    marginTop: 5,
+    marginRight: 10,
+    fontSize: 25
+  }
 });
 
 class AppView extends React.Component {
@@ -31,16 +50,36 @@ class AppView extends React.Component {
     return false;
   }
 
+  _renderRightButton() {
+    const { title } = this.props;
+    if (title === 'Home') {
+      return (
+        <TouchableOpacity
+          onPress={ this._showNavbar }
+          style={ styles.barRightButton }
+        >
+          <Text style={ styles.barRightButtonText }>+</Text>
+        </TouchableOpacity>
+      );
+    }
+  }
+
   render() {
     const tabViewStyle = {
       showNavigationBar: false,
       titleStyle: styles.header,
-      navigationBarStyle: styles.navigationBar,
     };
 
     return (
-      <Router initial="app" hideNavBar={ this._showNavbar }>
-        <Schema name="default" sceneConfig={ Navigator.SceneConfigs.FloatFromRight }/>
+      <Router
+        initial="app"
+        hideNavBar={ this._showNavbar }
+        navigationBarStyle={ styles.navigationBar }
+        titleStyle={styles.titleStyle}
+        barButtonIconStyle={ styles.backButtonStyle }
+        renderRightButton = { this._renderRightButton }
+      >
+        <Schema name="default"/>
         <Schema name="tab" type="switch" icon={ TabIcon } />
         <Route name="app" initial="home" >
           <Router footer={ TabBar } {...tabViewStyle} >

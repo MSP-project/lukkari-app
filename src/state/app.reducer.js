@@ -22,8 +22,10 @@ const coursesInitialState = Immutable.List([]);
 // Reducer for course specific actions
 function courses(state = coursesInitialState, action) {
   switch (action.type) {
-    case types.ADD_COURSE:
+    case types.SHOW_ALL_COURSES:
       return state;
+    case types.SET_ALL_COURSES:
+      return Immutable.List(action.newCourses);
     default:
       return state;
   }
@@ -37,10 +39,9 @@ const selectedCourseInitialState = Immutable.Map({
 function selectedCourse(state = selectedCourseInitialState, action) {
   switch (action.type) {
     case types.SET_COURSE_DATA:
-      const newState = state.withMutations((oldState) => {
+      return state.withMutations((oldState) => {
         oldState.set('courseMeta', action.data.course).set('events', action.data.events);
       });
-      return newState;
     default:
       return state;
   }

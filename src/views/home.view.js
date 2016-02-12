@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    const { getCourseData } = props;
-    getCourseData('MS-A0107');
+    const { getCourse } = props;
+    getCourse('MS-A0107');
   }
 
   render() {

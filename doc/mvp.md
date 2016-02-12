@@ -56,3 +56,14 @@ Käyttäjän lisäämät tapahtumat:
   }
 ]
 ```
+
+#### Endpoints
+
+`example.com/api/event`  
+-> Kaikki käyttäjän eventit  
+`example.com/api/event/id`  
+-> Single event based on id  
+`example.com/api/course`  
+-> All courses for user  
+`example.com/api/course/courseCode`  
+-> All data for specific coursep

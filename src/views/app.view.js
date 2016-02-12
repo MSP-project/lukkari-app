@@ -1,17 +1,24 @@
 import React from 'react-native';
-import { Router, Route, Schema, TabBar } from 'react-native-router-flux';
+import { Router, Route, Schema, TabBar, Actions } from 'react-native-router-flux';
 
 import Calendar from './calendar.view';
 import SpaceView from './space.view';
 import Home from './home.view';
 
 import TabIcon from '../components/tabicon.component';
+import AddCourse from '../components/addCourse.component';
 
 
 const {
   StyleSheet,
   TouchableOpacity,
-  Text } = React;
+  Text,
+  PropTypes
+} = React;
+
+const propTypes = {
+  title: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
   navigationBar: {
@@ -25,7 +32,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   backButtonStyle: {
-    tintColor: 'white',
+    tintColor: 'white'
   },
   barRightButton: {
     paddingLeft: 40,
@@ -35,9 +42,10 @@ const styles = StyleSheet.create({
   },
   barRightButtonText: {
     color: 'white',
-    marginTop: 5,
+    marginTop: 1,
     marginRight: 10,
-    fontSize: 25
+    fontSize: 30,
+    fontWeight: '300'
   }
 });
 
@@ -55,7 +63,7 @@ class AppView extends React.Component {
     if (title === 'Home') {
       return (
         <TouchableOpacity
-          onPress={ this._showNavbar }
+          onPress={ Actions.addCourse }
           style={ styles.barRightButton }
         >
           <Text style={ styles.barRightButtonText }>+</Text>
@@ -81,6 +89,7 @@ class AppView extends React.Component {
       >
         <Schema name="default"/>
         <Schema name="tab" type="switch" icon={ TabIcon } />
+
         <Route name="app" initial="home" >
           <Router footer={ TabBar } {...tabViewStyle} >
             <Route schema="tab" name="home" title="Home" component={ Home }/>
@@ -95,9 +104,18 @@ class AppView extends React.Component {
           title="Map"
           component={ SpaceView }
         />
+        <Route
+          wrapRouter
+          hideNavBar={ false }
+          name="addCourse"
+          schema="default"
+          component={ AddCourse }
+          title="Follow Course"
+        />
       </Router>
     );
   }
 }
+AppView.propTypes = propTypes;
 
 export default AppView;

@@ -1,7 +1,7 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
-import { setCourseData } from '../state/app.action';
-import { get } from '../utils/api';
+import { setCourseData, setAllCourses } from '../state/app.action';
+import { get, post } from '../utils/api';
 
 function* watchCourse() {
   while (true) {
@@ -14,6 +14,18 @@ function* watchCourse() {
   }
 }
 
+function* watchNewCourse() {
+  while (true) {
+    // Catch action dispatch
+    const action = yield take(types.ADD_COURSE_SAGA);
+    // Post new course to user data GET new courses as return value
+    const response = yield call(post, '/dummy', { data: action.courseCode });
+    // Update courses
+    yield put(setAllCourses(response));
+  }
+}
+
 export default function* root() {
   yield fork(watchCourse);
+  yield fork(watchNewCourse);
 }

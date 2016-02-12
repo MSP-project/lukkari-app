@@ -1,15 +1,53 @@
 import * as types from './actiontypes';
 
-export function getCourseData(courseCode) {
+/************************************
+* "Selected course" related actions *
+************************************/
+
+export function setCourseData(courseData) {
+  return {
+    type: types.SET_COURSE_DATA,
+    data: courseData
+  };
+}
+
+/***************************
+* "Course" related actions *
+****************************/
+
+export function getCourse(courseCode) {
   return {
     type: types.GET_COURSE_DATA,
     courseCode
   };
 }
 
-export function setCourseData(courseData) {
+export function addCourse(courseCode) {
   return {
-    type: types.SET_COURSE_DATA,
-    data: courseData
+    type: types.ADD_COURSE_SAGA,
+    courseCode
+  };
+}
+
+/********************************
+* "All Courses" related actions *
+********************************/
+
+export function getCourses() {
+  return {
+    type: types.GET_ALL_COURSES,
+  };
+}
+// GET courses from server
+export function updateCourses() {
+  return {
+    type: types.UPDATE_ALL_COURSES,
+  };
+}
+// SET courses with list
+export function setAllCourses(newCourses) {
+  return {
+    type: types.SET_ALL_COURSES,
+    newCourses
   };
 }

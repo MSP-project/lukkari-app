@@ -1,12 +1,14 @@
 import React from 'react-native';
-import MapView from 'react-native-maps';
+
+import { coordinates } from '../services/coordinates';
 
 
 const {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  MapView
 } = React;
 
 
@@ -26,40 +28,64 @@ const styles = StyleSheet.create({
 class SpaceMap extends React.Component {
   constructor(props) {
     super(props);
+
+    this.watchID = null;
+
+    // Initial position to Otaniemi
+    this.state = {
+      mapRegion: {
+        latitude: 60.1887073,
+        longitude: 24.8282191,
+        latitudeDelta: 0.020,
+        longitudeDelta: 0.020,
+      },
+      annotations: [{
+        latitude: 60.1887073,
+        longitude: 24.8282191,
+        title: 'T-Talo',
+        subtitle: 'Otakaari 8'
+      }],
+      overlays: [{
+        coordinates: coordinates.points,
+        strokeColor: '#f007',
+        lineWidth: 3,
+        id: "Route"
+      }]
+    };
   }
 
   componentDidMount() {
-    // Without timeout too quick for iOS and Android.
-    // timeout 0 is ok for iOS, Android needs something longer
-    // setTimeout(function () {
-    //   this.refs.m1.showCallout();
-    // }.bind(this), 100);
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+      const newMapRegion = {
+        latitude: 60.1887073,
+        longitude: 24.8282191,
+        latitudeDelta: Math.abs(60.1887073 - position.coords.latitude) * 2.5,
+        longitudeDelta: Math.abs(24.8282191 - position.coords.longitude) * 2.3,
+      }
+      this.setState({
+        mapRegion: newMapRegion
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
   }
 
   render() {
     return (
-      <View style={styles.mapContainer}>
+      <View style={ styles.mapContainer }>
         <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: 60.1887073,
-            longitude: 24.8282191,
-            latitudeDelta: 0.0222,
-            longitudeDelta: 0.0121,
-          }}
+          style={ styles.map }
+          region={ this.state.mapRegion }
+          annotations={ this.state.annotations }
+          showsUserLocation={ true }
+          overlays = { this.state.overlays }
         >
-          <MapView.Marker
-            ref="m1"
-            coordinate={{ latitude: 60.1887073, longitude: 24.8282191 }}
-            title="Otakaari"
-            description="Testimarkkeri Otakaari 8"
-          />
-
         </MapView>
         <TouchableOpacity>
-          <Text
-            style={{ justifyContent: 'center', margin: 20, textAlign: 'center' }}
-          > This is a map demo
+          <Text style={{ justifyContent: 'center', margin: 20, textAlign: 'center' }}>
+            This is a map demo
           </Text>
         </TouchableOpacity>
       </View>

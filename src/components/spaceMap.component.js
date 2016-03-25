@@ -1,7 +1,8 @@
 import React from 'react-native';
-
-import { coordinates } from '../services/coordinates';
-
+import { connect } from 'react-redux/native';
+import { bindActionCreators } from 'redux';
+import * as actions from '../state/app.action';
+import { getDirectionCoordinates } from '../utils/googleAPI';
 
 const {
   StyleSheet,
@@ -10,7 +11,6 @@ const {
   TouchableOpacity,
   MapView
 } = React;
-
 
 const styles = StyleSheet.create({
   map: {
@@ -24,20 +24,19 @@ const styles = StyleSheet.create({
   },
 });
 
-
 class SpaceMap extends React.Component {
   constructor(props) {
     super(props);
-
     this.watchID = null;
+    this._getRouteData = this._getRouteData.bind(this);
 
     // Initial position to Otaniemi
     this.state = {
       mapRegion: {
         latitude: 60.1887073,
         longitude: 24.8282191,
-        latitudeDelta: 0.020,
-        longitudeDelta: 0.020,
+        latitudeDelta: 0.025,
+        longitudeDelta: 0.025,
       },
       annotations: [{
         latitude: 60.1887073,
@@ -45,12 +44,7 @@ class SpaceMap extends React.Component {
         title: 'T-Talo',
         subtitle: 'Otakaari 8'
       }],
-      overlays: [{
-        coordinates: coordinates.points,
-        strokeColor: '#f007',
-        lineWidth: 3,
-        id: "Route"
-      }]
+      overlays: []
     };
   }
 
@@ -63,7 +57,11 @@ class SpaceMap extends React.Component {
         longitudeDelta: Math.abs(24.8282191 - position.coords.longitude) * 2.3,
       }
       this.setState({
-        mapRegion: newMapRegion
+        mapRegion: newMapRegion,
+        userLocation: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }
       });
     });
   }
@@ -72,20 +70,27 @@ class SpaceMap extends React.Component {
     navigator.geolocation.clearWatch(this.watchID);
   }
 
+  _getRouteData() {
+    const { getRoute } = this.props;
+    getRoute(this.state.userLocation, this.state.mapRegion);
+  }
+
   render() {
+    const { mapData } = this.props;
+    
     return (
       <View style={ styles.mapContainer }>
         <MapView
           style={ styles.map }
-          region={ this.state.mapRegion }
-          annotations={ this.state.annotations }
+          region={ mapData.region }
+          annotations={ mapData.annotations }
           showsUserLocation={ true }
-          overlays = { this.state.overlays }
+          overlays = { mapData.overlays }
         >
         </MapView>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={ this._getRouteData }>
           <Text style={{ justifyContent: 'center', margin: 20, textAlign: 'center' }}>
-            This is a map demo
+            Get route data
           </Text>
         </TouchableOpacity>
       </View>
@@ -93,4 +98,11 @@ class SpaceMap extends React.Component {
   }
 }
 
-export default SpaceMap;
+export default connect(
+  state => ({
+    mapData: state.mapData
+  }),
+  dispatch => ({
+    ...bindActionCreators(actions, dispatch)
+  })
+)(SpaceMap);

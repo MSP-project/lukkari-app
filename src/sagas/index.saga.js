@@ -1,7 +1,8 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
-import { setCourseData, setAllCourses } from '../state/app.action';
+import { setCourseData, setAllCourses, addRoute } from '../state/app.action';
 import { get, post } from '../utils/api';
+import { getDirectionCoordinates } from '../utils/googleAPI';
 
 function* watchCourse() {
   while (true) {
@@ -25,7 +26,16 @@ function* watchNewCourse() {
   }
 }
 
+function* getRoute() {
+  while (true) {
+    const action = yield take(types.GET_ROUTE);
+    const response = yield call(getDirectionCoordinates, action.startPoint, action.endPoint);
+    yield put(addRoute(response));
+  }
+}
+
 export default function* root() {
   yield fork(watchCourse);
   yield fork(watchNewCourse);
+  yield fork(getRoute);
 }

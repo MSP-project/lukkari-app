@@ -72,8 +72,8 @@ Home.propTypes = propTypes;
 
 export default connect(
   state => ({
-    courseMeta: state.selectedCourse.get('courseMeta'),
-    events: state.selectedCourse.get('events')
+    courseMeta: state.selectedCourse.courseMeta,
+    events: state.selectedCourse.events
   }),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)

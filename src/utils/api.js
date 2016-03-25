@@ -1,5 +1,5 @@
 // All API calls
-import { delay } from '../services';
+import { delay } from '../utils/dummyAPI';
 // Dummy data
 import { courseA0107 as MSA0107 } from '../state/dummydata';
 

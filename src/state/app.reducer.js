@@ -4,7 +4,7 @@ import * as types from './actiontypes';
 import Immutable from 'immutable';
 
 
-const eventsInitialState = Immutable.List([]);
+const eventsInitialState = [];
 
 // Reducer for event specific actions.
 function events(state = eventsInitialState, action) {
@@ -17,7 +17,7 @@ function events(state = eventsInitialState, action) {
 }
 
 
-const coursesInitialState = Immutable.List([]);
+const coursesInitialState = [];
 
 // Reducer for course specific actions
 function courses(state = coursesInitialState, action) {
@@ -25,23 +25,55 @@ function courses(state = coursesInitialState, action) {
     case types.SHOW_ALL_COURSES:
       return state;
     case types.SET_ALL_COURSES:
-      return Immutable.List(action.newCourses);
+      return [action.newCourses];
     default:
       return state;
   }
 }
 
-const selectedCourseInitialState = Immutable.Map({
+const selectedCourseInitialState = {
   courseMeta: {},
   events: []
-});
+};
 
 function selectedCourse(state = selectedCourseInitialState, action) {
   switch (action.type) {
     case types.SET_COURSE_DATA:
-      return state.withMutations((oldState) => {
-        oldState.set('courseMeta', action.data.course).set('events', action.data.events);
-      });
+      return {
+        courseMeta: action.data.course,
+        events: action.data.events
+      };
+    default:
+      return state;
+  }
+}
+
+const mapInitialState = {
+  region: {
+    latitude: 60.1887073,
+    longitude: 24.8282191,
+    latitudeDelta: 0.025,
+    longitudeDelta: 0.025,
+  },
+  annotations: [{
+    latitude: 60.1887073,
+    longitude: 24.8282191,
+    title: 'T-Talo',
+    subtitle: 'Otakaari 8'
+  }],
+  overlays: []
+};
+
+function mapData(state = mapInitialState, action) {
+  switch (action.type) {
+    case types.ADD_ROUTE:
+      const newOverlay = state.overlays.concat([{
+        coordinates: action.coordinates,
+        strokeColor: '#f007',
+        lineWidth: 3,
+        id: "Route"
+      }]);
+      return Object.assign({}, state, state.overlays = newOverlay);
     default:
       return state;
   }
@@ -50,7 +82,8 @@ function selectedCourse(state = selectedCourseInitialState, action) {
 const rootReducer = combineReducers({
   events,
   courses,
-  selectedCourse
+  selectedCourse,
+  mapData
 });
 
 export default rootReducer;

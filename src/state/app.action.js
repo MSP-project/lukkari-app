@@ -51,3 +51,21 @@ export function setAllCourses(newCourses) {
     newCourses
   };
 }
+
+/********************************
+* "All map" related actions *
+********************************/
+export function getRoute(startPoint, endPoint) {
+  return {
+    type: types.GET_ROUTE,
+    startPoint,
+    endPoint
+  };
+}
+
+export function addRoute(coordinates) {
+  return {
+    type: types.ADD_ROUTE,
+    coordinates
+  }
+}

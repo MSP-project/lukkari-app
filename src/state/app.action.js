@@ -86,6 +86,14 @@ export function userSession(sessionStatusBool) {
   };
 }
 
+export function registerUser(username, password) {
+  return {
+    type: types.REGISTER_USER,
+    username,
+    password
+  }
+}
+
 export function logoutUser() {
   return {
     type: types.LOGOUT

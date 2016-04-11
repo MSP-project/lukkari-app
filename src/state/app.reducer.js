@@ -90,12 +90,25 @@ function userSession(state = userSessionState, action) {
   }
 }
 
+const loginFormState = {
+  usernameDublicate: false,
+};
+
+function loginForm(state = loginFormState, action) {
+  switch (action.type) {
+    case types.REGISTRATION_FAIL:
+      return Object.assign(state, { usernameDublicate: true });
+    default:
+      return state;
+  }
+}
 const rootReducer = combineReducers({
   events,
   courses,
   selectedCourse,
   mapData,
-  userSession
+  userSession,
+  loginForm
 });
 
 export default rootReducer;

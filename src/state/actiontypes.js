@@ -22,6 +22,8 @@ export const IS_LOGGED_IN = 'IS_LOGGED_IN';
 export const _IS_LOGGED_IN = '_IS_LOGGED_IN';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
+export const _LOGOUT = '_LOGOUT';
 
 // User registering
 export const REGISTER_USER = 'REGISTER_USER';
+export const LOGIN_FORM_SUCCESS = 'LOGIN_FORM_SUCCESS';

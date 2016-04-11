@@ -28,7 +28,9 @@ async function request(path='/dummypath', options) {
         return [];
       case 'POST':
         return {
-          body: [options.body]
+          body: {
+            token: 'ASD123'
+          }
         };
       default:
         return [];

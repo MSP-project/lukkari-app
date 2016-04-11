@@ -46,6 +46,8 @@ class Home extends React.Component {
     super(props);
     const { getCourse } = props;
     getCourse('MS-A0107');
+
+    this._logout = this._logout.bind(this);
   }
 
   componentDidMount() {
@@ -58,6 +60,11 @@ class Home extends React.Component {
     if (!loggedIn) {
       Actions.login();
     }
+  }
+
+  _logout() {
+    const { logoutUser } = this.props;
+    logoutUser();
   }
 
   render() {
@@ -74,7 +81,14 @@ class Home extends React.Component {
           <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
           <Text style={{ marginBottom: 5 }}>{ courseMeta.credits }</Text>
           <Text style={{ marginBottom: 5 }}>{ courseMeta.code }</Text>
-          <Text style={{ marginBottom: 5 }}>{ loggedIn.toString() }</Text>
+
+        </TouchableOpacity>
+        <TouchableOpacity onPress={ Actions.login } style={ styles.touchable }>
+          <Text style={{ marginBottom: 5 }}>LOGGED IN: { loggedIn.toString() }</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={ this._logout } style={ styles.touchable }>
+          <Text style={{ marginBottom: 5 }}>LOGOUT</Text>
         </TouchableOpacity>
 
       </ScrollView>

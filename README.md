@@ -1,3 +1,5 @@
+# USE RN0.2 BRANCH!!! RN UPDATE ISSUES WERE EASIER TO SOLVE BY NEW PROJECT INIT. MIGHT BE MERGED TO MASTER IN THE FUTURE
+
 # lukkari-app
 A timetable React Native Android mobile application for Aalto University's students.
 

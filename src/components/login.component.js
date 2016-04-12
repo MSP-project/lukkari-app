@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Actions } from 'react-native-router-flux';
 
+import _ from 'lodash';
+
 import * as actions from '../state/app.action';
 
 const {
@@ -20,8 +22,15 @@ const propTypes = {};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 100
+  },
+  loginElement: {
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 30,
+    marginRight: 30,
+    padding: 10,
   },
   textInput: {
     flexDirection: 'row',
@@ -29,11 +38,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     height: 50,
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    padding: 10,
   },
   loginWarning: {
     color: 'red'
@@ -46,6 +50,15 @@ const styles = StyleSheet.create({
   },
   button: {
     color: 'white'
+  },
+  newUserSwitchContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+  },
+  switchLabel: {
+    alignSelf: 'center',
+    paddingRight: 40
   }
 });
 
@@ -63,7 +76,7 @@ class Login extends React.Component {
       username: '',
       password: '',
       verifiedPassword: '',
-      isNewUser: true,
+      isNewUser: false,
       usernameDublicate: false,
       passwordMismatch: false,
     };
@@ -89,11 +102,13 @@ class Login extends React.Component {
     this.setState({ isNewUser });
   }
   _handleLogin() {
-    const { registerUser } = this.props;
+    const { registerUser, loginUser } = this.props;
+    const username = _.trim(this.state.username);
+    const password = _.trim(this.state.password);
     if (this.state.isNewUser) {
-      const a = registerUser(this.state.username, this.state.password);
+      registerUser(username, password);
     } else {
-      // Do normal login
+      loginUser(username, password);
     }
   }
   _getVerifyPassBlock() {
@@ -103,8 +118,11 @@ class Login extends React.Component {
     return {
       header: <Text style={ styleCombination }>Verify Password:</Text>,
       textInput: <TextInput
-        style={ styles.textInput }
+        style={ [styles.textInput, styles.loginElement] }
         onChangeText={ this._updateVerifiedPassword }
+        autoCapitalize='none'
+        autoCorrect={ false }
+        secureTextEntry={ true }
       />
     };
   }
@@ -115,25 +133,34 @@ class Login extends React.Component {
       <View style={ styles.container }>
         <Text style={ this.state.usernameDublicate ? styles.loginWarning : null }>Username:</Text>
         <TextInput
-          style={ styles.textInput }
+          style={ [styles.textInput, styles.loginElement] }
           onChangeText={ this._updateUsername }
+          autoCapitalize='none'
+          autoCorrect={ false }
         />
         <Text>Password:</Text>
         <TextInput
-          style={ styles.textInput }
+          style={ [styles.textInput, styles.loginElement] }
           onChangeText={ this._updatePassword }
+          autoCapitalize='none'
+          autoCorrect={ false }
+          secureTextEntry={ true }
         />
+
         { verifyPass.header }
         { verifyPass.textInput }
 
         <Text>{this.state.username}</Text>
         <Text>{this.state.password}</Text>
 
-        <Text>Are you a new user?</Text>
-        <Switch
-          onValueChange={(value) => this._isNewUser(value)}
-          value={this.state.isNewUser}
-        />
+        <View style={ [styles.newUserSwitchContainer, styles.loginElement] }>
+          <Text style={ styles.switchLabel }>Are you a new user?</Text>
+          <Switch
+            onValueChange={(value) => this._isNewUser(value)}
+            value={this.state.isNewUser}
+          />
+        </View>
+
         <TouchableOpacity
           style={ styles.buttonContainer }
           onPress={ this._handleLogin }

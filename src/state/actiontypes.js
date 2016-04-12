@@ -27,3 +27,5 @@ export const _LOGOUT = '_LOGOUT';
 // User registering
 export const REGISTER_USER = 'REGISTER_USER';
 export const LOGIN_FORM_SUCCESS = 'LOGIN_FORM_SUCCESS';
+
+export const CREDENTIALS = 'CREDENTIALS';

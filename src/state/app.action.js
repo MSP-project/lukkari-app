@@ -94,8 +94,24 @@ export function registerUser(username, password) {
   }
 }
 
+export function loginUser(username, password) {
+  return {
+    type: types.LOGIN,
+    username,
+    password
+  }
+}
+
 export function logoutUser() {
   return {
     type: types.LOGOUT
+  }
+}
+
+export function credentials(token, uid) {
+  return {
+    type: types.CREDENTIALS,
+    token,
+    uid
   }
 }

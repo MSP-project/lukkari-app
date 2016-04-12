@@ -14,8 +14,14 @@ export const dataBlob = {
     start: '21:00',
     end: '22:00',
     location: 'Adress Street 345',
+    last: false
+  },
+  'sectionID1:rowID3': {
+    header: '3nd Header for Row1',
+    start: '19:00',
+    end: '22:00',
+    location: 'Adress Street 345',
     last: true
-
   },
   sectionID2: {
     date: 'Wednesday, 10 of February'
@@ -90,7 +96,7 @@ export const dataBlob = {
 export const sectionIDs = ['sectionID1', 'sectionID2', 'sectionID3', 'sectionID4', 'sectionID5'];
 
 export const rowIDs = [
-  ['rowID1', 'rowID2'],
+  ['rowID1', 'rowID2', 'rowID3'],
   ['rowID1', 'rowID2'],
   ['rowID1', 'rowID2'],
   ['rowID1', 'rowID2'],

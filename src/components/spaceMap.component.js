@@ -72,13 +72,13 @@ class SpaceMap extends React.Component {
 
   _getRouteData() {
     const { getRoute } = this.props;
-    getRoute(this.state.userLocation, this.state.mapRegion);
+    this.state.userLocation
+      ? getRoute(this.state.userLocation, this.state.mapRegion)
+      : alert('No location data available');
   }
 
   render() {
     const { mapData } = this.props;
-
-    console.log(this.state);
 
     return (
       <View style={ styles.mapContainer }>
@@ -92,7 +92,7 @@ class SpaceMap extends React.Component {
         </MapView>
         <TouchableOpacity onPress={ this._getRouteData }>
           <Text style={{ justifyContent: 'center', margin: 20, textAlign: 'center' }}>
-            Get route data
+            Show route
           </Text>
         </TouchableOpacity>
       </View>

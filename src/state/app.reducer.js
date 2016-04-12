@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
-import * as types from './actiontypes';
-import Immutable from 'immutable';
+import { Actions } from 'react-native-router-flux';
 
+import * as types from './actiontypes';
 
 const eventsInitialState = [];
 
@@ -102,13 +102,32 @@ function loginForm(state = loginFormState, action) {
       return state;
   }
 }
+
+const appState = {
+  redirect: false,
+  redirectLocation: null,
+  token: null,
+  uid: null
+};
+
+function application(state = appState, action) {
+  switch (action.type) {
+    case types.CREDENTIALS:
+      const { token, uid } = action;
+      return Object.assign(state, { token, uid });
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
   events,
   courses,
   selectedCourse,
   mapData,
   userSession,
-  loginForm
+  loginForm,
+  application
 });
 
 export default rootReducer;

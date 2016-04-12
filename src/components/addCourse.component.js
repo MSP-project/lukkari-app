@@ -41,6 +41,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 30,
     borderRadius: 4,
+    width: 100,
+    alignItems: 'center',
   },
   button: {
     color: 'white'
@@ -71,6 +73,7 @@ class AddCourse extends React.Component {
     const { allCourses } = this.props;
     return (
       <View style={ styles.container }>
+        <Text>Type in the course identifier:</Text>
         <TextInput
           style={ styles.textInput }
           onChangeText={ this._updateCourseCode }
@@ -79,7 +82,7 @@ class AddCourse extends React.Component {
           style={ styles.buttonContainer }
           onPress={ this._addCourse }
         >
-          <Text style={ styles.button }>Add Course</Text>
+          <Text style={ styles.button }>Add</Text>
         </TouchableOpacity>
         <Text>Added course: { allCourses }</Text>
       </View>

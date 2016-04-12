@@ -1,6 +1,10 @@
 import React from 'react-native';
 import { Router, Route, Schema, TabBar, Actions } from 'react-native-router-flux';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as actions from '../state/app.action';
+
 import Calendar from './calendar.view';
 import SpaceView from './space.view';
 import Home from './home.view';
@@ -55,6 +59,19 @@ class AppView extends React.Component {
     super(props);
   }
 
+  componentDidMount() {
+    const { isLoggedIn } = this.props;
+    isLoggedIn();
+  }
+
+  componentDidUpdate() {
+    const { loggedIn, application } = this.props;
+    console.log("APP STATE", application.uid);
+    if (!loggedIn) {
+      Actions.login();
+    }
+  }
+
   _showNavbar() {
     return false;
   }
@@ -73,7 +90,13 @@ class AppView extends React.Component {
     }
   }
 
+  isSignedIn() {
+    console.log("HEEEP");
+  }
+
   render() {
+
+
     const tabViewStyle = {
       showNavigationBar: false,
       titleStyle: styles.header,
@@ -91,7 +114,7 @@ class AppView extends React.Component {
         <Schema name="default"/>
         <Schema name="tab" type="switch" icon={ TabIcon } />
 
-        <Route name="app" initial="home" >
+        <Route name="app" initial="home" onEnter={this.isSignedIn}>
           <Router footer={ TabBar } {...tabViewStyle} >
             <Route schema="tab" name="home" title="Home" component={ Home }/>
             <Route schema="tab" name="calendar" title="Calendar" component={ Calendar } />
@@ -126,4 +149,14 @@ class AppView extends React.Component {
 }
 AppView.propTypes = propTypes;
 
-export default AppView;
+// export default AppView;
+
+export default connect(
+  state => ({
+    application: state.application,
+    loggedIn: state.userSession
+  }),
+  dispatch => ({
+    ...bindActionCreators(actions, dispatch)
+  })
+)(AppView);

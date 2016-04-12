@@ -12,6 +12,7 @@ const {
   PropTypes,
   TouchableOpacity,
   Image,
+  View
 } = React;
 
 const propTypes = {
@@ -25,19 +26,33 @@ const styles = StyleSheet.create({
 
   },
   scrollViewContent: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 60
+  },
+  coursesView: {
+    flex: 1,
   },
   headerImage: {
     marginBottom: 30,
-    height: 140,
+    marginTop: -100,
+    height: 250,
   },
   touchable: {
     alignItems: 'center',
     paddingTop: 20,
-    paddingBottom: 20,
     paddingLeft: 5,
     paddingRight: 5,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    backgroundColor: '#1F64A6',
+    padding: 15,
+    borderRadius: 4,
+  },
+  button: {
+    color: 'white',
   }
 });
 
@@ -45,21 +60,9 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     const { getCourse } = props;
-    getCourse('MS-A0107');
+    // getCourse('CSE-A1200');
 
     this._logout = this._logout.bind(this);
-  }
-
-  componentDidMount() {
-    const { isLoggedIn } = this.props;
-    isLoggedIn();
-  }
-
-  componentDidUpdate() {
-    const { loggedIn } = this.props;
-    if (!loggedIn) {
-      Actions.login();
-    }
   }
 
   _logout() {
@@ -76,19 +79,24 @@ class Home extends React.Component {
         contentContainerStyle={ styles.scrollViewContent }
       >
         <Image style={ styles.headerImage } source={require('../img/mycoursesheader.png')} />
-        <Text style={{ marginBottom: 50 }}>This is the Home page</Text>
-        <TouchableOpacity onPress={ Actions.spaceMap } style={ styles.touchable }>
-          <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
-          <Text style={{ marginBottom: 5 }}>{ courseMeta.credits }</Text>
-          <Text style={{ marginBottom: 5 }}>{ courseMeta.code }</Text>
+        <Text style={{ marginBottom: 20 }}>Upcoming events and ongoing courses </Text>
 
-        </TouchableOpacity>
-        <TouchableOpacity onPress={ Actions.login } style={ styles.touchable }>
-          <Text style={{ marginBottom: 5 }}>LOGGED IN: { loggedIn.toString() }</Text>
-        </TouchableOpacity>
+        <View style={ styles.coursesView }>
+          <TouchableOpacity onPress={ Actions.spaceMap } style={ styles.touchable }>
+            <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
+          </TouchableOpacity>
+          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Creddits: { courseMeta.credits }</Text>
+          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Course code: { courseMeta.code }</Text>
 
-        <TouchableOpacity onPress={ this._logout } style={ styles.touchable }>
-          <Text style={{ marginBottom: 5 }}>LOGOUT</Text>
+          <TouchableOpacity onPress={ Actions.spaceMap } style={ styles.touchable }>
+            <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
+          </TouchableOpacity>
+          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Creddits: { courseMeta.credits }</Text>
+          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Course code: { courseMeta.code }</Text>
+        </View>
+
+        <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }>
+          <Text style={ styles.button }>Logout</Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -102,7 +110,6 @@ export default connect(
   state => ({
     courseMeta: state.selectedCourse.courseMeta,
     events: state.selectedCourse.events,
-    loggedIn: state.userSession
   }),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)

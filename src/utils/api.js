@@ -7,80 +7,66 @@ import { courseA0107 as MSA0107 } from '../state/dummydata';
 const TIMEOUT = 5000;
 
 function url(path) {
-  const apiRoot ='localhost:8082';
+  const apiRoot ='http://localhost:8082';
   return path.indexOf('/') === 0
     ? apiRoot + path
     : apiRoot + '/' + path;
 
 }
 
-async function request(path='/dummypath', options) {
+async function request(path='/register', options) {
   // Get full path
   const endpoint = url(path);
-
+  console.log("OPTIONS", options);
+  console.log("ENDPOINT", endpoint);
   try {
-    // No real API connected yet
-    switch (options.method) {
-      case 'GET':
-        await delay(500);
-        return { body: MSA0107 };
-      case 'PUT':
-        return [];
-      case 'POST':
-        return {
-          body: {
-            token: 'ASD123'
-          }
-        };
-      default:
-        return [];
-
-    }
-    // WHEN API connected
-    // const response = await timeout(fetch(endpoint, options), TIMEOUT);
-    // return resonse;
+    const response = await fetch(endpoint, options);
+    console.log("RESPONSE", response);
+    return response;
   } catch(error) {
     throw error;
   }
 }
 
-export async function get(path) {
+export async function get(path, token='') {
   const options = {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
     }
   };
-
   const response = await request(path, options);
-
-  return response.body;
+  return response.json();
 }
 
-export async function put(path, data) {
+export async function put(path, data, token='') {
   const options = {
     method: 'PUT',
     headers: {
       'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify(data)
   };
 
   const response = await request(path, options);
 
-  return response.body;
+  return response.json();
 }
 
-export async function post(path, data) {
+export async function post(path, data, token='') {
   const options = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify(data)
   };
 
   const response = await request(path, options);
 
-  return response.body;
+  return response.json();
 }

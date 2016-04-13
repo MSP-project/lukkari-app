@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import _ from 'lodash';
 
 import { Actions } from 'react-native-router-flux';
 
@@ -17,13 +18,58 @@ function events(state = eventsInitialState, action) {
 }
 
 
-const coursesInitialState = [];
+const coursesInitialState = {
+  calendarFormat: {
+    sections: [],
+    rows: [],
+    dataBlob: {}
+  },
+  allEvents: {},
+  courses: [],
+  isFetching: false
+};
 
 // Reducer for course specific actions
 function courses(state = coursesInitialState, action) {
   switch (action.type) {
-    case types.SHOW_ALL_COURSES:
-      return state;
+    case types.UPDATE_COURSE:
+      const allEvents = _
+        .chain(action.courseData.events)
+        .map( (event) => event.subEvents
+          .map( (subEvent, index) => Object.assign(_.omit(event, 'subEvents'), subEvent) ))
+        .flatten()
+        .sortBy(['date'])
+        .value();
+
+      const calendarFormat = _
+        .chain(allEvents)
+        .groupBy('date')
+        .map( (value, key) => value )
+        .value();
+
+      const tmpCalendarFinal = {
+        dataBlob: {},
+        sections: calendarFormat.map( (section, index) => `SectionID${index}` ),
+        rows: calendarFormat.map( (section) => section.map( (row, index) => `RowID${index}`))
+      };
+
+      const calendarFormatFinal = calendarFormat
+        .reduce( (obj, section, index) => {
+          const sectionObj = { [`SectionID${index}`]: { date: section[0].date } };
+          const itemObj = section.reduce( (itemPrev, itemCurr, itemIndex, arr ) => {
+            const eventObj = {
+              header: itemCurr.type,
+              start: itemCurr.startTime,
+              end: itemCurr.endTime,
+              location: 'NaN',
+              last: (arr.length - 1) === itemIndex ? true : false
+            };
+            return Object.assign(itemPrev, { [`SectionID${index}:RowID${itemIndex}`]: eventObj })
+          }, sectionObj)
+          return Object.assign(obj, { dataBlob: Object.assign(obj.dataBlob, itemObj) });
+        }, tmpCalendarFinal);
+      console.log(state);
+      return Object.assign(state, { calendarFormat: calendarFormatFinal });
     case types.SET_ALL_COURSES:
       return [action.newCourses];
     default:

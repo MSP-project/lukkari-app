@@ -1,6 +1,6 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
-import { setCourseData, setAllCourses, addRoute, userSession, registrationSuccess, isLoggedIn, credentials } from '../state/app.action';
+import * as actions from '../state/app.action';
 import { get, post } from '../utils/api';
 import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
@@ -11,14 +11,33 @@ function* authorizedNetworkCall(method, path, data, token) {
   return response;
 }
 
-function* watchCourse() {
+function* getCourseData(courseCode, token) {
+  try {
+    const courseData = yield call(authorizedNetworkCall, get, `course/${courseCode}`, token);
+    yield put(actions.updateCourseData(courseData));
+  } catch (error) {
+    throw error
+  }
+}
+
+function* watchCourses() {
   while (true) {
     // Catch action dispatch
-    const { courseCode } = yield take(types.GET_COURSE_DATA);
-    // Get data from server
-    const courseData = yield call(get, `course/${courseCode}`);
-    // Update state
-    yield put(setCourseData(courseData));
+    yield take(types.GET_ALL_COURSES);
+    // Get session
+    const { token, uid } = yield call(getSession);
+    try {
+      // Get all courses that user has added
+      const courses = yield call(authorizedNetworkCall, get, `user/${uid}/courses`, token);
+      // Fetch course related data for every course
+      // Wait for every call to finnish
+      yield courses.map( (course) => call(getCourseData, course, token));
+    } catch (error) {
+      alert(error);
+    }
+    // State => not loading anymore.
+    // TODO: THIS
+    yield put(actions.allCourseDataReceived());
   }
 }
 
@@ -32,7 +51,7 @@ function* watchNewCourse() {
     // Post new course to user data GET new courses as return value
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
-      yield put(setAllCourses(response.course.code))
+      yield put(actions.setAllCourses(response.course.code))
     } catch (error) {
       alert(error);
     }
@@ -44,7 +63,7 @@ function* watchGetRoute() {
   while (true) {
     const action = yield take(types.GET_ROUTE);
     const response = yield call(getDirectionCoordinates, action.startPoint, action.endPoint);
-    yield put(addRoute(response));
+    yield put(actions.addRoute(response));
   }
 }
 
@@ -52,7 +71,7 @@ function* watchIsLoggedIn() {
   while (true) {
     const action = yield take(types.IS_LOGGED_IN);
     const response = yield call(isUserAuthenticated);
-    yield put(userSession(response));
+    yield put(actions.userSession(response));
   }
 }
 
@@ -64,9 +83,9 @@ function* watchRegisterUser() {
     // Store token to asyncStorage
     yield call(addSession, token, user._id);
     // Send confirmation for redirection
-    yield put(isLoggedIn());
+    yield put(actions.isLoggedIn());
     // Pass credentials to app state
-    yield put(credentials(token, user._id));
+    yield put(actions.credentials(token, user._id));
   }
 }
 
@@ -78,9 +97,9 @@ function* watchLoginUser() {
     // Store token to asyncStorage
     yield call(addSession, token, user._id);
     // Send confirmation for redirection
-    yield put(isLoggedIn());
+    yield put(actions.isLoggedIn());
     // Pass credentials to app state
-    yield put(credentials(token, user._id));
+    yield put(actions.credentials(token, user._id));
 
   }
 }
@@ -89,12 +108,12 @@ function* watchLogoutUser() {
   while (true) {
     yield take(types.LOGOUT);
     yield call(removeSessionToken);
-    yield put(isLoggedIn());
+    yield put(actions.isLoggedIn());
   }
 }
 
 export default function* root() {
-  yield fork(watchCourse);
+  yield fork(watchCourses);
   yield fork(watchNewCourse);
   yield fork(watchGetRoute);
   yield fork(watchIsLoggedIn);

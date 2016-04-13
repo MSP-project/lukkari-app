@@ -6,6 +6,7 @@ export const GET_COURSE_DATA = 'GET_COURSE_DATA';
 export const SET_COURSE_DATA = 'SET_COURSE_DATA';
 export const ADD_COURSE_SAGA = 'ADD_COURSE_SAGA';
 export const UPDATE_COURSE = 'UPDATE_COURSE';
+export const COURSES_LOAD_FINNISHED = 'COURSES_LOAD_FINNISHED';
 
 // Courses action types
 export const GET_ALL_COURSES = 'GET_ALL_COURSES';

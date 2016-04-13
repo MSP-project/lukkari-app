@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    const { getCourse } = props;
-    // getCourse('CSE-A1200');
+    const { getCourses } = props;
+    getCourses();
 
     this._logout = this._logout.bind(this);
   }

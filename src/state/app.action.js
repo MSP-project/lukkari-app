@@ -52,6 +52,19 @@ export function setAllCourses(newCourses) {
   };
 }
 
+export function allCourseDataReceived() {
+  return {
+    type: types.COURSES_LOAD_FINNISHED,
+  }
+}
+
+export function updateCourseData(courseData) {
+  return {
+    type: types.UPDATE_COURSE,
+    courseData
+  }
+}
+
 /********************************
 * "All map" related actions *
 ********************************/

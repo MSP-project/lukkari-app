@@ -1,8 +1,4 @@
 // All API calls
-import { delay } from '../utils/dummyAPI';
-// Dummy data
-import { courseA0107 as MSA0107 } from '../state/dummydata';
-
 
 const TIMEOUT = 5000;
 
@@ -21,7 +17,6 @@ async function request(path='/register', options) {
   console.log("ENDPOINT", endpoint);
   try {
     const response = await fetch(endpoint, options);
-    console.log("RESPONSE", response);
     return response;
   } catch(error) {
     throw error;

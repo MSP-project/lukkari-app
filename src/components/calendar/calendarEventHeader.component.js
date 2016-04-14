@@ -9,22 +9,28 @@ const {
 
 const propTypes = {
   containerStyle: PropTypes.number.isRequired,
-  header: PropTypes.string.isRequired,
+  rowData: PropTypes.object.isRequired,
 };
 
 const styles = StyleSheet.create({
   headerText: {
     paddingTop: 2
+  },
+  locationText: {
+    fontSize: 10,
+  },
+  privateContainer: {
+    justifyContent: 'space-between',
   }
 });
 
 class CalendarEventHeader extends React.Component {
   render() {
-    const { containerStyle, header } = this.props;
-
+    const { containerStyle, rowData } = this.props;
     return (
-      <View style={ containerStyle }>
-        <Text style={ styles.headerText }>{ header }</Text>
+      <View style={ [containerStyle, styles.privateContainer] }>
+        <Text style={ styles.headerText }>{ rowData.header }</Text>
+        <Text style={ styles.locationText }>{ rowData.location.map( (location) => `${location.room}, ${location.building}`).join('/') }</Text>
       </View>
     );
   }

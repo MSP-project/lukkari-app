@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { Actions } from 'react-native-router-flux';
 
@@ -24,7 +25,7 @@ const coursesInitialState = {
     rows: [],
     dataBlob: {}
   },
-  allEvents: {},
+  allEvents: [],
   courses: [],
   isFetching: false
 };
@@ -33,43 +34,61 @@ const coursesInitialState = {
 function courses(state = coursesInitialState, action) {
   switch (action.type) {
     case types.UPDATE_COURSE:
+      // TODO: location
+      // All events in one array with
       const allEvents = _
         .chain(action.courseData.events)
         .map( (event) => event.subEvents
-          .map( (subEvent, index) => Object.assign(_.omit(event, 'subEvents'), subEvent) ))
+          .map( (subEvent, index) => Object.assign({},
+            _.omit(event, 'subEvents'),
+            subEvent, action.courseData.course,
+            { date: moment(subEvent.date, ['DD.MM.YY', 'MM-DD-YYYY']) })))
         .flatten()
-        .sortBy(['date'])
+        .concat(state.allEvents)
+        .sortBy(['date', 'startTime'])
         .value();
 
-      const calendarFormat = _
+      // List of events grouped to nested array based on date
+      const eventsGroupedByDate = _
         .chain(allEvents)
+        .filter( (event) => event.date >= moment().startOf('day'))
         .groupBy('date')
         .map( (value, key) => value )
         .value();
 
-      const tmpCalendarFinal = {
+      const calendarFormatObj = {
         dataBlob: {},
-        sections: calendarFormat.map( (section, index) => `SectionID${index}` ),
-        rows: calendarFormat.map( (section) => section.map( (row, index) => `RowID${index}`))
+        sections: eventsGroupedByDate.map( (section, index) => `SectionID${index}` ),
+        rows: eventsGroupedByDate.map( (section) => section.map( (row, index) => `RowID${index}`))
       };
 
-      const calendarFormatFinal = calendarFormat
+      const calendarFormat = eventsGroupedByDate
         .reduce( (obj, section, index) => {
-          const sectionObj = { [`SectionID${index}`]: { date: section[0].date } };
+          // Section header
+          const sectionObj = { [`SectionID${index}`]: { date: moment(section[0].date).format("dddd, MMMM Do YYYY") } };
+          // All events in one section
           const itemObj = section.reduce( (itemPrev, itemCurr, itemIndex, arr ) => {
             const eventObj = {
-              header: itemCurr.type,
+              type: itemCurr.type,
+              courseCode: itemCurr.code,
+              courseName: itemCurr.name,
+              header: `${itemCurr.code} - ${itemCurr.name}`,
               start: itemCurr.startTime,
               end: itemCurr.endTime,
-              location: 'NaN',
+              location: itemCurr.locations,
               last: (arr.length - 1) === itemIndex ? true : false
             };
-            return Object.assign(itemPrev, { [`SectionID${index}:RowID${itemIndex}`]: eventObj })
+            return Object.assign({}, itemPrev, { [`SectionID${index}:RowID${itemIndex}`]: eventObj })
           }, sectionObj)
-          return Object.assign(obj, { dataBlob: Object.assign(obj.dataBlob, itemObj) });
-        }, tmpCalendarFinal);
-      console.log(state);
-      return Object.assign(state, { calendarFormat: calendarFormatFinal });
+          // Header and items combined with previous
+          return Object.assign({}, obj, { dataBlob: Object.assign({}, obj.dataBlob, itemObj) });
+        }, calendarFormatObj);
+      // Return new state
+      return Object.assign({}, state, {
+        calendarFormat: calendarFormat,
+        allEvents: allEvents,
+        courses: state.courses.concat([action.courseData])
+      });
     case types.SET_ALL_COURSES:
       return [action.newCourses];
     default:
@@ -120,6 +139,8 @@ function mapData(state = mapInitialState, action) {
         id: "Route"
       }]);
       return Object.assign({}, state, state.overlays = newOverlay);
+    case types.COURSE_MAP:
+      return state;
     default:
       return state;
   }
@@ -143,7 +164,7 @@ const loginFormState = {
 function loginForm(state = loginFormState, action) {
   switch (action.type) {
     case types.REGISTRATION_FAIL:
-      return Object.assign(state, { usernameDublicate: true });
+      return Object.assign({},state, { usernameDublicate: true });
     default:
       return state;
   }
@@ -160,7 +181,7 @@ function application(state = appState, action) {
   switch (action.type) {
     case types.CREDENTIALS:
       const { token, uid } = action;
-      return Object.assign(state, { token, uid });
+      return Object.assign({}, state, { token, uid });
     default:
       return state;
   }

@@ -2,6 +2,8 @@ import React from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Actions } from 'react-native-router-flux';
+import _ from 'lodash';
+import moment from 'moment';
 
 import * as actions from '../state/app.action';
 
@@ -16,7 +18,8 @@ const {
 } = React;
 
 const propTypes = {
-  courseMeta: PropTypes.object.isRequired,
+  events: PropTypes.array.isRequired,
+  courses: PropTypes.array.isRequired,
 };
 
 const styles = StyleSheet.create({
@@ -71,7 +74,26 @@ class Home extends React.Component {
   }
 
   render() {
-    const { courseMeta, loggedIn } = this.props;
+    const { events } = this.props;
+    const showEvents = _
+      .chain(events)
+      .filter( (event) => event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(2, 'weeks'))
+      .groupBy('code')
+      .value();
+
+    const eventElems = _.map(showEvents, (value, key, index) => {
+      const inner = value.map( (event, index) =>
+        <TouchableOpacity key={ index } onPress={ Actions.spaceMap } style={ styles.touchable }>
+          <Text style={{ marginBottom: 5 }}>TYPE: {event.type}</Text>
+        </TouchableOpacity> )
+      return (<View key={index}>
+        <Text style={{ marginBottom: 5 }}>COURSE NAME: {key}</Text>
+        { inner }
+      </View>);
+      });
+
+
+    console.log(eventElems)
 
     return (
       <ScrollView
@@ -82,17 +104,7 @@ class Home extends React.Component {
         <Text style={{ marginBottom: 20 }}>Upcoming events and ongoing courses </Text>
 
         <View style={ styles.coursesView }>
-          <TouchableOpacity onPress={ Actions.spaceMap } style={ styles.touchable }>
-            <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
-          </TouchableOpacity>
-          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Creddits: { courseMeta.credits }</Text>
-          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Course code: { courseMeta.code }</Text>
-
-          <TouchableOpacity onPress={ Actions.spaceMap } style={ styles.touchable }>
-            <Text style={{ marginBottom: 5 }}>{ courseMeta.name }</Text>
-          </TouchableOpacity>
-          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Creddits: { courseMeta.credits }</Text>
-          <Text style={{ marginBottom: 5, marginLeft: 40 }}>Course code: { courseMeta.code }</Text>
+          {eventElems}
         </View>
 
         <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }>
@@ -108,8 +120,8 @@ Home.propTypes = propTypes;
 
 export default connect(
   state => ({
-    courseMeta: state.selectedCourse.courseMeta,
-    events: state.selectedCourse.events,
+    events: state.courses.allEvents,
+    courses: state.courses.courses
   }),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)

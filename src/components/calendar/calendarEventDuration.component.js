@@ -9,8 +9,7 @@ const {
 
 const propTypes = {
   containerStyle: PropTypes.number.isRequired,
-  start: PropTypes.string.isRequired,
-  end: PropTypes.string.isRequired,
+  rowData: PropTypes.object.isRequired,
 };
 
 const styles = StyleSheet.create({
@@ -28,11 +27,11 @@ const styles = StyleSheet.create({
 
 class CalendarEventDuration extends React.Component {
   render() {
-    const { containerStyle, start, end } = this.props;
+    const { containerStyle, rowData } = this.props;
     return (
       <View style={ containerStyle }>
-        <Text style={ [styles.durationText, styles.start] }> { start }</Text>
-        <Text style={ [styles.durationText, styles.end] }> { end }</Text>
+        <Text style={ [styles.durationText, styles.start] }> { rowData.start }</Text>
+        <Text style={ [styles.durationText, styles.end] }> { rowData.end }</Text>
       </View>
     );
   }

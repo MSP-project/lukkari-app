@@ -29,23 +29,6 @@ class SpaceMap extends React.Component {
     super(props);
     this.watchID = null;
     this._getRouteData = this._getRouteData.bind(this);
-
-    // Initial position to Otaniemi
-    this.state = {
-      mapRegion: {
-        latitude: 60.1887073,
-        longitude: 24.8282191,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
-      },
-      annotations: [{
-        latitude: 60.1887073,
-        longitude: 24.8282191,
-        title: 'T-Talo',
-        subtitle: 'Otakaari 8'
-      }],
-      overlays: []
-    };
   }
 
   componentDidMount() {

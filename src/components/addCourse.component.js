@@ -13,10 +13,7 @@ const {
   PropTypes
 } = React;
 
-const propTypes = {
-  addCourse: PropTypes.func.isRequired,
-  allCourses: PropTypes.object.isRequired,
-};
+const propTypes = {};
 
 const styles = StyleSheet.create({
   container: {
@@ -70,7 +67,6 @@ class AddCourse extends React.Component {
   }
 
   render() {
-    const { allCourses } = this.props;
     return (
       <View style={ styles.container }>
         <Text>Type in the course identifier:</Text>
@@ -84,7 +80,6 @@ class AddCourse extends React.Component {
         >
           <Text style={ styles.button }>Add</Text>
         </TouchableOpacity>
-        <Text>Added course: { allCourses }</Text>
       </View>
     );
   }
@@ -93,9 +88,7 @@ class AddCourse extends React.Component {
 AddCourse.propTypes = propTypes;
 
 export default connect(
-  state => ({
-    allCourses: state.courses
-  }),
+  state => ({}),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)
   })

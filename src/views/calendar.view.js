@@ -30,7 +30,7 @@ class Calendar extends React.Component {
     super(props);
 
     const { calendarData } = props;
-    
+
     const ds = new ListView.DataSource({
       getSectionData: (dataBlob, sectionID) => dataBlob[sectionID],
       getRowData: (dataBlob, sectionID, rowID) => dataBlob[sectionID + ':' + rowID],
@@ -50,7 +50,7 @@ class Calendar extends React.Component {
 
   _renderSectionBody(rowData) {
     return (
-      <CalendarEvent header={ rowData.header } start={ rowData.start } end={ rowData.end } last={ rowData.last }/>
+      <CalendarEvent rowData ={ rowData }/>
     );
   }
 

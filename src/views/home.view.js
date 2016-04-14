@@ -92,9 +92,6 @@ class Home extends React.Component {
       </View>);
       });
 
-
-    console.log(eventElems)
-
     return (
       <ScrollView
         style={ styles.scrollViewContainer }

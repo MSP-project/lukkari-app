@@ -83,6 +83,13 @@ export function addRoute(coordinates) {
   }
 }
 
+export function initMap(data) {
+  return {
+    type: types.INIT_MAP,
+    data
+  }
+}
+
 /********************************
 * All "Session" related actions *
 ********************************/

@@ -6,9 +6,16 @@ import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
 
 function* authorizedNetworkCall(method, path, data, token) {
-  const response = yield call(method, path, data, token);
   // TODO: Do something fun, if the status code is not 200
-  return response;
+  try {
+    const response = yield call(method, path, data, token);
+    if (response.status === 401) {
+      yield put(actions.isLoggedIn());
+    }
+    return response.body;
+  } catch (error) {
+    throw error;
+  }
 }
 
 function* getCourseData(courseCode, token) {
@@ -31,7 +38,9 @@ function* watchCourses() {
       const courses = yield call(authorizedNetworkCall, get, `user/${uid}/courses`, token);
       // Fetch course related data for every course
       // Wait for every call to finnish
-      yield courses.map( (course) => call(getCourseData, course, token));
+      if (courses.length) {
+        yield courses.map( (course) => call(getCourseData, course, token));
+      }
     } catch (error) {
       alert(error);
     }
@@ -69,7 +78,7 @@ function* watchGetRoute() {
 
 function* watchIsLoggedIn() {
   while (true) {
-    const action = yield take(types.IS_LOGGED_IN);
+    yield take(types.IS_LOGGED_IN);
     const response = yield call(isUserAuthenticated);
     yield put(actions.userSession(response));
   }
@@ -79,7 +88,8 @@ function* watchRegisterUser() {
   while (true) {
     const { username, password } = yield take(types.REGISTER_USER);
     // Register and get token from back-end
-    const { token, user } = yield call(post, '/register', { username, password });
+    const { body } = yield call(post, '/register', { username, password });
+    const { token, user } = body;
     // Store token to asyncStorage
     yield call(addSession, token, user._id);
     // Send confirmation for redirection
@@ -93,7 +103,8 @@ function* watchLoginUser() {
   while (true) {
     const { username, password } = yield take(types.LOGIN);
     // Register and get token from back-end
-    const { token, user } = yield call(post, '/login', { username, password });
+    const { body } = yield call(post, '/login', { username, password });
+    const { token, user } = body;
     // Store token to asyncStorage
     yield call(addSession, token, user._id);
     // Send confirmation for redirection

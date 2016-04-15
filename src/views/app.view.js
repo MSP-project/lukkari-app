@@ -66,7 +66,6 @@ class AppView extends React.Component {
 
   componentDidUpdate() {
     const { loggedIn, application } = this.props;
-    console.log("APP STATE", application.uid);
     if (!loggedIn) {
       Actions.login();
     }
@@ -90,10 +89,6 @@ class AppView extends React.Component {
     }
   }
 
-  isSignedIn() {
-    console.log("HEEEP");
-  }
-
   render() {
 
 
@@ -114,7 +109,7 @@ class AppView extends React.Component {
         <Schema name="default"/>
         <Schema name="tab" type="switch" icon={ TabIcon } />
 
-        <Route name="app" initial="home" onEnter={this.isSignedIn}>
+        <Route name="app" initial="home">
           <Router footer={ TabBar } {...tabViewStyle} >
             <Route schema="tab" name="home" title="Home" component={ Home }/>
             <Route schema="tab" name="calendar" title="Calendar" component={ Calendar } />

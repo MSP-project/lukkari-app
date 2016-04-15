@@ -29,7 +29,7 @@ class CalendarEventHeader extends React.Component {
     const { containerStyle, rowData } = this.props;
     return (
       <View style={ [containerStyle, styles.privateContainer] }>
-        <Text style={ styles.headerText }>{ rowData.header }</Text>
+        <Text style={ styles.headerText }>{ rowData.courseCode } - { rowData.courseName }</Text>
         <Text style={ styles.locationText }>{ rowData.location.map( (location) => `${location.room}, ${location.building}`).join('/') }</Text>
       </View>
     );

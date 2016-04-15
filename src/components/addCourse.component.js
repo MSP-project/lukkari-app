@@ -10,10 +10,7 @@ const {
   Text,
   TouchableOpacity,
   TextInput,
-  PropTypes
 } = React;
-
-const propTypes = {};
 
 const styles = StyleSheet.create({
   container: {
@@ -84,8 +81,6 @@ class AddCourse extends React.Component {
     );
   }
 }
-
-AddCourse.propTypes = propTypes;
 
 export default connect(
   state => ({}),

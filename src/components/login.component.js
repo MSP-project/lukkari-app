@@ -13,11 +13,8 @@ const {
   Text,
   TextInput,
   TouchableOpacity,
-  PropTypes,
   Switch
 } = React;
-
-const propTypes = {};
 
 const styles = StyleSheet.create({
   container: {
@@ -120,7 +117,7 @@ class Login extends React.Component {
       textInput: <TextInput
         style={ [styles.textInput, styles.loginElement] }
         onChangeText={ this._updateVerifiedPassword }
-        autoCapitalize='none'
+        autoCapitalize="none"
         autoCorrect={ false }
         secureTextEntry={ true }
       />
@@ -135,14 +132,14 @@ class Login extends React.Component {
         <TextInput
           style={ [styles.textInput, styles.loginElement] }
           onChangeText={ this._updateUsername }
-          autoCapitalize='none'
+          autoCapitalize="none"
           autoCorrect={ false }
         />
         <Text>Password:</Text>
         <TextInput
           style={ [styles.textInput, styles.loginElement] }
           onChangeText={ this._updatePassword }
-          autoCapitalize='none'
+          autoCapitalize="none"
           autoCorrect={ false }
           secureTextEntry={ true }
         />

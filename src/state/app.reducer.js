@@ -2,8 +2,6 @@ import { combineReducers } from 'redux';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { Actions } from 'react-native-router-flux';
-
 import * as types from './actiontypes';
 
 const eventsInitialState = [];
@@ -39,7 +37,7 @@ function courses(state = coursesInitialState, action) {
       const allEvents = _
         .chain(action.courseData.events)
         .map( (event) => event.subEvents
-          .map( (subEvent, index) => Object.assign({},
+          .map( (subEvent) => Object.assign({},
             _.omit(event, 'subEvents'),
             subEvent, action.courseData.course,
             { date: moment(subEvent.date, ['DD.MM.YY', 'MM-DD-YYYY']) })))
@@ -53,7 +51,7 @@ function courses(state = coursesInitialState, action) {
         .chain(allEvents)
         .filter( (event) => event.date >= moment().startOf('day'))
         .groupBy('date')
-        .map( (value, key) => value )
+        .map( (value) => value )
         .value();
 
       const calendarFormatObj = {
@@ -65,14 +63,13 @@ function courses(state = coursesInitialState, action) {
       const calendarFormat = eventsGroupedByDate
         .reduce( (obj, section, index) => {
           // Section header
-          const sectionObj = { [`SectionID${index}`]: { date: moment(section[0].date).format("dddd, MMMM Do YYYY") } };
+          const sectionObj = { [`SectionID${index}`]: { date: moment(section[0].date).format('dddd, MMMM Do YYYY') } };
           // All events in one section
           const itemObj = section.reduce( (itemPrev, itemCurr, itemIndex, arr ) => {
             const eventObj = {
               type: itemCurr.type,
               courseCode: itemCurr.code,
               courseName: itemCurr.name,
-              header: `${itemCurr.code} - ${itemCurr.name}`,
               start: itemCurr.startTime,
               end: itemCurr.endTime,
               location: itemCurr.locations,
@@ -136,11 +133,28 @@ function mapData(state = mapInitialState, action) {
         coordinates: action.coordinates,
         strokeColor: '#f007',
         lineWidth: 3,
-        id: "Route"
+        id: 'Route'
       }]);
       return Object.assign({}, state, state.overlays = newOverlay);
     case types.COURSE_MAP:
       return state;
+    case types.INIT_MAP:
+      console.log("ACTION DATA", action.data);
+      const annotations = action.data.location.map( (location, index) => Object.assign({}, {
+        latitude: location.lat,
+        longitude: location.lng,
+        title: `${location.room}, ${location.building}`,
+        subtitle: `${location.address}`,
+        id: `Annotation${index}`,
+        eventData: action.data
+      }));
+      const region = {
+        latitude: action.data.location[0].lat,
+        longitude: action.data.location[0].lng,
+        latitudeDelta: 0.025,
+        longitudeDelta: 0.025,
+      }
+      return Object.assign({}, state, state.annotations = annotations, state.region = region);
     default:
       return state;
   }

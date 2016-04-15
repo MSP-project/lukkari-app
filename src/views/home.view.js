@@ -7,6 +7,8 @@ import moment from 'moment';
 
 import * as actions from '../state/app.action';
 
+import CalendarEvent from '../components/calendar/calendarEvent.component';
+
 const {
   ScrollView,
   Text,
@@ -26,19 +28,19 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
     backgroundColor: 'transparent',
-
   },
   scrollViewContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 60
   },
   coursesView: {
     flex: 1,
   },
+  headerView: {
+    alignItems: 'center',
+    padding: 20,
+  },
   headerImage: {
-    marginBottom: 30,
     marginTop: -100,
     height: 250,
   },
@@ -50,12 +52,18 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
-    backgroundColor: '#1F64A6',
-    padding: 15,
-    borderRadius: 4,
+    backgroundColor: 'gray',
+    padding: 10,
   },
   button: {
     color: 'white',
+  },
+  courseHeader: {
+    paddingLeft: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    backgroundColor: '#1F64A6',
+    color: 'white'
   }
 });
 
@@ -77,18 +85,47 @@ class Home extends React.Component {
     const { events } = this.props;
     const showEvents = _
       .chain(events)
-      .filter( (event) => event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(2, 'weeks'))
       .groupBy('code')
       .value();
 
+    // Map
     const eventElems = _.map(showEvents, (value, key, index) => {
-      const inner = value.map( (event, index) =>
-        <TouchableOpacity key={ index } onPress={ Actions.spaceMap } style={ styles.touchable }>
-          <Text style={{ marginBottom: 5 }}>TYPE: {event.type}</Text>
-        </TouchableOpacity> )
-      return (<View key={index}>
-        <Text style={{ marginBottom: 5 }}>COURSE NAME: {key}</Text>
-        { inner }
+      const lecturesToday = _
+        .chain(value)
+        .filter( (event) => event.type === 'lecture' && event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(1, 'day'))
+        .map( (event, index) => {
+          return (<TouchableOpacity key={ index } onPress={ Actions.spaceMap }>
+            <CalendarEvent rowData={ {
+              type: event.type,
+              start: event.startTime,
+              end: event.endTime,
+              courseCode: event.code,
+              courseName: event.name,
+              location: event.locations,
+            } }/>
+          </TouchableOpacity> )})
+        .value();
+
+      const exercisesToday = _
+        .chain(value)
+        .filter( (event) => event.type === 'exercise' && event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(1, 'week'))
+        .map( (event, index) => {
+          return ( <CalendarEvent key={ index } rowData={ {
+              type: event.type,
+              start: event.startTime,
+              end: event.endTime,
+              courseCode: event.code,
+              courseName: event.name,
+              location: event.locations,
+            } }/> )})
+        .value();
+
+      const noLectures = <Text> No lectures today </Text>;
+      const noExercises = <Text> No exercises today </Text>;
+      return (<View key={ index } style={ styles.courseSection }>
+        <Text style={ styles.courseHeader }>{ key }</Text>
+        { lecturesToday }
+        { exercisesToday }
       </View>);
       });
 
@@ -98,10 +135,13 @@ class Home extends React.Component {
         contentContainerStyle={ styles.scrollViewContent }
       >
         <Image style={ styles.headerImage } source={require('../img/mycoursesheader.png')} />
-        <Text style={{ marginBottom: 20 }}>Upcoming events and ongoing courses </Text>
+        <View style={ styles.headerView }>
+          <Text >Todays events and ongoing courses </Text>
+        </View>
+
 
         <View style={ styles.coursesView }>
-          {eventElems}
+          { eventElems }
         </View>
 
         <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }>

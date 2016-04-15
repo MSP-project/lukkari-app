@@ -18,6 +18,7 @@ export const SET_ALL_COURSES = 'SET_ALL_COURSES';
 export const ADD_ROUTE = 'ADD_ROUTE';
 export const GET_ROUTE = 'GET_ROUTE';
 export const COURSE_MAP = 'COURSE_MAP';
+export const INIT_MAP = 'INIT_MAP';
 
 // User session types
 export const IS_LOGGED_IN = 'IS_LOGGED_IN';

@@ -7,9 +7,6 @@ import * as actions from '../state/app.action';
 import CalendarDate from '../components/calendar/calendarDate.component';
 import CalendarEvent from '../components/calendar/calendarEvent.component';
 
-import { dataBlob, sectionIDs, rowIDs } from '../utils/dummydata';
-
-
 const {
   ListView,
   StyleSheet,

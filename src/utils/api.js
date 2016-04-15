@@ -3,7 +3,8 @@
 const TIMEOUT = 5000;
 
 function url(path) {
-  const apiRoot ='http://localhost:8082';
+  // 146.185.150.48
+  const apiRoot ='http://146.185.150.48:8082';
   return path.indexOf('/') === 0
     ? apiRoot + path
     : apiRoot + '/' + path;
@@ -17,7 +18,11 @@ async function request(path='/register', options) {
   console.log("ENDPOINT", endpoint);
   try {
     const response = await fetch(endpoint, options);
-    return response;
+    const responseJson = await response.json();
+    return {
+      body: responseJson,
+      status: response.status
+    }
   } catch(error) {
     throw error;
   }
@@ -32,7 +37,7 @@ export async function get(path, token='') {
     }
   };
   const response = await request(path, options);
-  return response.json();
+  return response;
 }
 
 export async function put(path, data, token='') {
@@ -47,7 +52,7 @@ export async function put(path, data, token='') {
 
   const response = await request(path, options);
 
-  return response.json();
+  return response;
 }
 
 export async function post(path, data, token='') {
@@ -63,5 +68,5 @@ export async function post(path, data, token='') {
 
   const response = await request(path, options);
 
-  return response.json();
+  return response;
 }

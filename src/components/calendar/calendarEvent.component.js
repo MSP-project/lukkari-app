@@ -1,11 +1,17 @@
 import React from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Actions } from 'react-native-router-flux';
+
+import * as actions from '../../state/app.action';
 
 import CalendarEventDuration from './calendarEventDuration.component';
 import CalendarEventHeader from './calendarEventHeader.component';
 const {
   View,
   StyleSheet,
-  PropTypes
+  PropTypes,
+  TouchableOpacity
 } = React;
 
 const propTypes = {
@@ -33,23 +39,41 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     borderStyle: 'solid',
-    borderRightColor: '#FF681F',
     borderRightWidth: 3,
   }
 });
 
 class CalendarEvent extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this._viewEventOnMap = this._viewEventOnMap.bind(this);
+  }
+
+  _viewEventOnMap(rowData) {
+    const { initMap } = this.props;
+    initMap(rowData);
+    Actions.spaceMap();
+  }
+
   render() {
     const { rowData } = this.props;
     return (
-      <View style={ [styles.container, this.props.last ? null : styles.containerBorder] }>
-        <CalendarEventDuration containerStyle={ styles.duration } rowData={ rowData }/>
-        <CalendarEventHeader containerStyle={ styles.header } rowData={ rowData } />
-      </View>
+      <TouchableOpacity onPress={ this._viewEventOnMap.bind(this, rowData) }>
+        <View style={ [styles.container, this.props.last ? null : styles.containerBorder] }>
+          <CalendarEventDuration containerStyle={ styles.duration } rowData={ rowData }/>
+          <CalendarEventHeader containerStyle={ styles.header } rowData={ rowData } />
+        </View>
+      </TouchableOpacity>
     );
   }
 }
 
 CalendarEvent.propTypes = propTypes;
 
-module.exports = CalendarEvent;
+export default connect(
+  state => ({}),
+  dispatch => ({
+    ...bindActionCreators(actions, dispatch)
+  })
+)(CalendarEvent);

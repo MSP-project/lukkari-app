@@ -31,4 +31,11 @@ export const _LOGOUT = '_LOGOUT';
 export const REGISTER_USER = 'REGISTER_USER';
 export const LOGIN_FORM_SUCCESS = 'LOGIN_FORM_SUCCESS';
 
+// Errors
+export const ADD_COURSE_FAIL = 'ADD_COURSE_FAIL';
+export const LOGIN_FAIL = 'LOGIN_FAIL';
+
+// Navigation
+export const NAVIGATE = 'NAVIGATE';
+
 export const CREDENTIALS = 'CREDENTIALS';

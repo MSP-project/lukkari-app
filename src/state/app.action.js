@@ -135,3 +135,32 @@ export function credentials(token, uid) {
     uid
   }
 }
+
+
+/********************************
+* All "Errors" related actions *
+********************************/
+export function failAddCourse(message) {
+  return {
+    type: types.ADD_COURSE_FAIL,
+    message,
+  };
+}
+
+export function failLogin(message) {
+  return {
+    type: types.LOGIN_FAIL,
+    message,
+  };
+}
+
+
+/********************************
+* Navigation related actions *
+********************************/
+export function navigate(routeName) {
+  return {
+    type: types.NAVIGATE,
+    routeName,
+  };
+}

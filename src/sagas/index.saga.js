@@ -4,6 +4,7 @@ import * as actions from '../state/app.action';
 import { get, post } from '../utils/api';
 import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
+import { Actions } from 'react-native-router-flux';
 
 function* authorizedNetworkCall(method, path, data, token) {
   // TODO: Do something fun, if the status code is not 200
@@ -61,6 +62,7 @@ function* watchNewCourse() {
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
       yield put(actions.setAllCourses(response.course.code))
+      yield put(actions.navigate('calendar'));
     } catch (error) {
       alert(error);
     }
@@ -123,6 +125,24 @@ function* watchLogoutUser() {
   }
 }
 
+function* watchNavigate() {
+  while (true) {
+    const { routeName } = yield take(types.NAVIGATE);
+    console.log(`===> NAVIGATE TO: ${routeName}`);
+
+    // NOTE: it is not possible to navigate to inner routes (?)
+    switch (routeName) {
+      case 'app': return Actions.app();
+      case 'home': return Actions.app();
+      case 'calendar': return Actions.app();
+      case 'spaceMap': return Actions.spaceMap();
+      case 'addCourse': return Actions.addCourse();
+      case 'login': return Actions.login();
+      default: return Actions.app();
+    }
+  }
+}
+
 export default function* root() {
   yield fork(watchCourses);
   yield fork(watchNewCourse);
@@ -131,4 +151,5 @@ export default function* root() {
   yield fork(watchRegisterUser);
   yield fork(watchLoginUser);
   yield fork(watchLogoutUser);
+  yield fork(watchNavigate);
 }

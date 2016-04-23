@@ -11,6 +11,13 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(() => resolve(true), ms))
 }
 
+function* addMessage(message, delayAmount = 3000) {
+  yield put(actions.addMessage(message));
+  // Show message for 3 seconds
+  yield call(delay, delayAmount);
+  yield put(actions.clearMessage());
+}
+
 function* authorizedNetworkCall(method, path, data, token) {
   // TODO: Do something fun, if the status code is not 200
   try {
@@ -76,14 +83,10 @@ function* watchNewCourse() {
       yield put(actions.clearMessage());
       // yield put(actions.navigate('calendar'));
     } catch (error) {
-      yield put(actions.addMessage({
+      yield addMessage({
         type: 'error',
         content: 'Could not add new course. Check the course code!',
-      }));
-      // Show message for 3 seconds
-      yield call(delay, 3000);
-      yield put(actions.clearMessage());
-      // alert(error);
+      });
     }
 
   }
@@ -124,14 +127,23 @@ function* watchLoginUser() {
   while (true) {
     const { username, password } = yield take(types.LOGIN);
     // Register and get token from back-end
-    const { body } = yield call(post, '/login', { username, password });
-    const { token, user } = body;
-    // Store token to asyncStorage
-    yield call(addSession, token, user._id);
-    // Send confirmation for redirection
-    yield put(actions.isLoggedIn());
-    // Pass credentials to app state
-    yield put(actions.credentials(token, user._id));
+    try {
+      const { body } = yield call(post, '/login', { username, password });
+      const { token, user } = body;
+      // Store token to asyncStorage
+      yield call(addSession, token, user._id);
+      // Send confirmation for redirection
+      yield put(actions.isLoggedIn());
+      // Pass credentials to app state
+      yield put(actions.credentials(token, user._id));
+    } catch(e) {
+      console.log(e);
+      yield addMessage({
+        type: 'error',
+        content: 'Could not login with the given credentials',
+      });
+    }
+
 
   }
 }

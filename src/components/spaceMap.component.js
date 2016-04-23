@@ -43,6 +43,7 @@ class SpaceMap extends React.Component {
     super(props);
     this.watchID = null;
     this._getRouteData = this._getRouteData.bind(this);
+    this._removeRouteData = this._removeRouteData.bind(this);
     this._annotationFocus = this._annotationFocus.bind(this);
 
     this.state = {
@@ -83,10 +84,31 @@ class SpaceMap extends React.Component {
       : alert('No location data available');
   }
 
+  _removeRouteData() {
+    const { removeRoute } = this.props;
+    removeRoute();
+  }
+
   _annotationFocus() {
     this.setState({
       showAnnotation: !this.state.showAnnotation
     });
+  }
+
+  _getRouteButton(mapData) {
+    if (mapData && mapData.overlays.length) {
+      return (
+        <TouchableOpacity onPress={ this._removeRouteData } style={ styles.buttonContainer }>
+          <Text style={ styles.button }>Remove route</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <TouchableOpacity onPress={ this._getRouteData } style={ styles.buttonContainer }>
+          <Text style={ styles.button }>Show route</Text>
+        </TouchableOpacity>
+      );
+    }
   }
 
   render() {
@@ -95,6 +117,7 @@ class SpaceMap extends React.Component {
       ? <AnnotationInfoView mapData={ mapData } />
       : [];
 
+    const routeButton = this._getRouteButton(mapData);
     return (
       <View style={ styles.container }>
         <View style={ styles.mapContainer }>
@@ -112,11 +135,7 @@ class SpaceMap extends React.Component {
           </MapView>
           { annotationInfo }
         </View>
-        <TouchableOpacity onPress={ this._getRouteData } style={ styles.buttonContainer }>
-          <Text style={ styles.button }>
-            Show route
-          </Text>
-        </TouchableOpacity>
+        { routeButton }
       </View>
     );
   }

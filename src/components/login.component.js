@@ -147,9 +147,6 @@ class Login extends React.Component {
         { verifyPass.header }
         { verifyPass.textInput }
 
-        <Text>{this.state.username}</Text>
-        <Text>{this.state.password}</Text>
-
         <View style={ [styles.newUserSwitchContainer, styles.loginElement] }>
           <Text style={ styles.switchLabel }>Are you a new user?</Text>
           <Switch

@@ -9,6 +9,7 @@ export const UPDATE_COURSE = 'UPDATE_COURSE';
 export const COURSES_LOAD_FINNISHED = 'COURSES_LOAD_FINNISHED';
 
 // Courses action types
+export const CLEAR_COURSES = 'CLEAR_COURSES';
 export const GET_ALL_COURSES = 'GET_ALL_COURSES';
 export const UPDATE_ALL_COURSES = 'UPDATE_ALL_COURSES';
 export const SHOW_ALL_COURSES = 'SHOW_ALL_COURSES';
@@ -16,6 +17,7 @@ export const SET_ALL_COURSES = 'SET_ALL_COURSES';
 
 // Map action types
 export const ADD_ROUTE = 'ADD_ROUTE';
+export const REMOVE_ROUTE = 'types.REMOVE_ROUTE';
 export const GET_ROUTE = 'GET_ROUTE';
 export const COURSE_MAP = 'COURSE_MAP';
 export const INIT_MAP = 'INIT_MAP';

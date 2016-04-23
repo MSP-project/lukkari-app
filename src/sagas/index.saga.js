@@ -6,6 +6,11 @@ import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
 import { Actions } from 'react-native-router-flux';
 
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(() => resolve(true), ms))
+}
+
 function* authorizedNetworkCall(method, path, data, token) {
   // TODO: Do something fun, if the status code is not 200
   try {
@@ -62,9 +67,23 @@ function* watchNewCourse() {
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
       yield put(actions.setAllCourses(response.course.code))
-      yield put(actions.navigate('calendar'));
+      yield put(actions.addMessage({
+        type: 'success',
+        content: 'Course added successfully!',
+      }));
+      // Show message for 3 seconds
+      yield call(delay, 3000);
+      yield put(actions.clearMessage());
+      // yield put(actions.navigate('calendar'));
     } catch (error) {
-      alert(error);
+      yield put(actions.addMessage({
+        type: 'error',
+        content: 'Could not add new course. Check the course code!',
+      }));
+      // Show message for 3 seconds
+      yield call(delay, 3000);
+      yield put(actions.clearMessage());
+      // alert(error);
     }
 
   }

@@ -138,21 +138,21 @@ export function credentials(token, uid) {
 
 
 /********************************
-* All "Errors" related actions *
+* All "Messages" related actions *
 ********************************/
-export function failAddCourse(message) {
+export function clearMessage() {
   return {
-    type: types.ADD_COURSE_FAIL,
+    type: types.MESSAGE_CLEAR,
+  };
+}
+
+export function addMessage(message) {
+  return {
+    type: types.MESSAGE_ADD,
     message,
   };
 }
 
-export function failLogin(message) {
-  return {
-    type: types.LOGIN_FAIL,
-    message,
-  };
-}
 
 
 /********************************

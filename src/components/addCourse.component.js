@@ -4,6 +4,9 @@ import { bindActionCreators } from 'redux';
 
 import * as actions from '../state/app.action';
 
+// Components
+import Message from './message.component';
+
 const {
   StyleSheet,
   View,
@@ -13,6 +16,9 @@ const {
 } = React;
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -40,7 +46,7 @@ const styles = StyleSheet.create({
   },
   button: {
     color: 'white'
-  }
+  },
 });
 
 
@@ -63,20 +69,24 @@ class AddCourse extends React.Component {
     this.setState({ courseCode });
   }
 
+  // TODO: how to put message component on top of the view?
   render() {
     return (
-      <View style={ styles.container }>
-        <Text>Type in the course identifier:</Text>
-        <TextInput
-          style={ styles.textInput }
-          onChangeText={ this._updateCourseCode }
-        />
-        <TouchableOpacity
-          style={ styles.buttonContainer }
-          onPress={ this._addCourse }
-        >
-          <Text style={ styles.button }>Add</Text>
-        </TouchableOpacity>
+      <View style={ styles.flex }>
+        <View style={ styles.container }>
+          <Text>Type in the course identifier:</Text>
+          <TextInput
+            style={ styles.textInput }
+            onChangeText={ this._updateCourseCode }
+          />
+          <TouchableOpacity
+            style={ styles.buttonContainer }
+            onPress={ this._addCourse }
+          >
+            <Text style={ styles.button }>Add</Text>
+          </TouchableOpacity>
+        </View>
+        <Message/>
       </View>
     );
   }

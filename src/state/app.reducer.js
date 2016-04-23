@@ -201,6 +201,24 @@ function application(state = appState, action) {
   }
 }
 
+const messageInitialState = {
+  type: null,
+  content: null,
+};
+
+function message(state = messageInitialState, action) {
+  switch (action.type) {
+    case types.MESSAGE_ADD:
+      return Object.assign({}, state,
+        { type: action.message.type, content: action.message.content }
+      );
+    case types.MESSAGE_CLEAR:
+      return { type: null, content: null };
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
   events,
   courses,
@@ -208,7 +226,8 @@ const rootReducer = combineReducers({
   mapData,
   userSession,
   loginForm,
-  application
+  application,
+  message
 });
 
 export default rootReducer;

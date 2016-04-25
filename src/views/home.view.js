@@ -85,6 +85,7 @@ class Home extends React.Component {
 
   render() {
     const { events } = this.props;
+
     const showEvents = _
       .chain(events)
       .groupBy('code')

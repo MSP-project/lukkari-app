@@ -54,7 +54,7 @@ class AnnotationInfoView extends React.Component {
          outputRange: [100, 0]
        }),
      }],
-    }
+    };
 
     return (
       <Animated.View style={ [styles.annotationView, transform] }>

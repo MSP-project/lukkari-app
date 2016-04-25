@@ -33,4 +33,11 @@ export const _LOGOUT = '_LOGOUT';
 export const REGISTER_USER = 'REGISTER_USER';
 export const LOGIN_FORM_SUCCESS = 'LOGIN_FORM_SUCCESS';
 
+// Errors / Messages
+export const MESSAGE_CLEAR = 'MESSAGE_CLEAR';
+export const MESSAGE_ADD = 'MESSAGE_ADD';
+
+// Navigation
+export const NAVIGATE = 'NAVIGATE';
+
 export const CREDENTIALS = 'CREDENTIALS';

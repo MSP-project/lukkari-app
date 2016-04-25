@@ -147,3 +147,32 @@ export function credentials(token, uid) {
     uid
   }
 }
+
+
+/********************************
+* All "Messages" related actions *
+********************************/
+export function clearMessage() {
+  return {
+    type: types.MESSAGE_CLEAR,
+  };
+}
+
+export function addMessage(message) {
+  return {
+    type: types.MESSAGE_ADD,
+    message,
+  };
+}
+
+
+
+/********************************
+* Navigation related actions *
+********************************/
+export function navigate(routeName) {
+  return {
+    type: types.NAVIGATE,
+    routeName,
+  };
+}

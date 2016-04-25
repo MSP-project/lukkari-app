@@ -1,12 +1,24 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
 import * as actions from '../state/app.action';
-import { get, post } from '../utils/api';
+import { get, post, getMessageFromError } from '../utils/api';
 import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
+import { Actions } from 'react-native-router-flux';
+
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(() => resolve(true), ms))
+}
+
+function* addMessage(message, delayAmount = 3000) {
+  yield put(actions.addMessage(message));
+  // Show message for 3 seconds
+  yield call(delay, delayAmount);
+  yield put(actions.clearMessage());
+}
 
 function* authorizedNetworkCall(method, path, data, token) {
-  // TODO: Do something fun, if the status code is not 200
   try {
     const response = yield call(method, path, data, token);
     if (response.status === 401) {
@@ -23,7 +35,10 @@ function* getCourseData(courseCode, token) {
     const courseData = yield call(authorizedNetworkCall, get, `course/${courseCode}`, token);
     yield put(actions.updateCourseData(courseData));
   } catch (error) {
-    throw error
+    const errorMessage = getMessageFromError(error, 'Unable to get fetch course data');
+
+    // Put error message to message store
+    yield addMessage({ type: 'error', content: errorMessage });
   }
 }
 
@@ -60,10 +75,18 @@ function* watchNewCourse() {
     // Post new course to user data GET new courses as return value
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
-      yield put(actions.getCourses());
-      alert('Course added');
+
+      yield put(actions.setAllCourses(response.course.code))
+      yield addMessage({
+        type: 'success',
+        content: 'Course added successfully!'
+      });
+      // TODO: yield put(actions.navigate('calendar'));
     } catch (error) {
-      alert('Course was not found');
+      yield addMessage({
+        type: 'error',
+        content: 'Could not add new course. Check the course code!',
+      });
     }
 
   }
@@ -88,15 +111,24 @@ function* watchIsLoggedIn() {
 function* watchRegisterUser() {
   while (true) {
     const { username, password } = yield take(types.REGISTER_USER);
-    // Register and get token from back-end
-    const { body } = yield call(post, '/register', { username, password });
-    const { token, user } = body;
-    // Store token to asyncStorage
-    yield call(addSession, token, user._id);
-    // Send confirmation for redirection
-    yield put(actions.isLoggedIn());
-    // Pass credentials to app state
-    yield put(actions.credentials(token, user._id));
+
+    try {
+      // Register and get token from back-end
+      const { body } = yield call(post, '/register', { username, password });
+
+      const { token, user } = data;
+      // Store token to asyncStorage
+      yield call(addSession, token, user._id);
+      // Send confirmation for redirection
+      yield put(actions.isLoggedIn());
+      // Pass credentials to app state
+      yield put(actions.credentials(token, user._id));
+    } catch(error) {
+      const errorMessage = getMessageFromError(error, 'Unable to register new user');
+
+      // Put error message to message store
+      yield addMessage({ type: 'error', content: errorMessage });
+    }
   }
 }
 
@@ -104,16 +136,22 @@ function* watchLoginUser() {
   while (true) {
     const { username, password } = yield take(types.LOGIN);
     // Register and get token from back-end
-    const { body } = yield call(post, '/login', { username, password });
-    const { token, user } = body;
-    // Store token to asyncStorage
-    yield call(addSession, token, user._id);
-    // Send confirmation for redirection
-    yield put(actions.isLoggedIn());
-    // Pass credentials to app state
-    yield put(actions.credentials(token, user._id));
-    yield put(actions.clearCourses());
+    try {
+      const { body } = yield call(post, '/login', { username, password });
+      const { token, user } = body;
+      // Store token to asyncStorage
+      yield call(addSession, token, user._id);
+      // Send confirmation for redirection
+      yield put(actions.isLoggedIn());
+      // Pass credentials to app state
+      yield put(actions.credentials(token, user._id));
+    } catch(error) {
+      console.log(error);
+      const errorMessage = getMessageFromError(error, 'Could not login with the given credentials');
 
+      // Put error message to message store
+      yield addMessage({ type: 'error', content: errorMessage });
+    }
   }
 }
 
@@ -125,6 +163,24 @@ function* watchLogoutUser() {
   }
 }
 
+function* watchNavigate() {
+  while (true) {
+    const { routeName } = yield take(types.NAVIGATE);
+    console.log(`===> NAVIGATE TO: ${routeName}`);
+
+    // NOTE: it is not possible to navigate to inner routes (?)
+    switch (routeName) {
+      case 'app': return Actions.app();
+      case 'home': return Actions.app();
+      case 'calendar': return Actions.app();
+      case 'spaceMap': return Actions.spaceMap();
+      case 'addCourse': return Actions.addCourse();
+      case 'login': return Actions.login();
+      default: return Actions.app();
+    }
+  }
+}
+
 export default function* root() {
   yield fork(watchCourses);
   yield fork(watchNewCourse);
@@ -133,4 +189,5 @@ export default function* root() {
   yield fork(watchRegisterUser);
   yield fork(watchLoginUser);
   yield fork(watchLogoutUser);
+  yield fork(watchNavigate);
 }

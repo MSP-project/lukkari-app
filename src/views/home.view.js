@@ -16,7 +16,8 @@ const {
   PropTypes,
   TouchableOpacity,
   Image,
-  View
+  View,
+  RefreshControl
 } = React;
 
 const propTypes = {
@@ -26,15 +27,8 @@ const propTypes = {
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
-    flex: 1,
     backgroundColor: 'transparent',
-  },
-  scrollViewContent: {
-    flex: 1,
     marginBottom: 60
-  },
-  coursesView: {
-    flex: 1,
   },
   headerView: {
     alignItems: 'center',
@@ -74,11 +68,19 @@ class Home extends React.Component {
     getCourses();
 
     this._logout = this._logout.bind(this);
+    this.state = {
+      refreshing: false,
+      show: false
+    };
   }
 
   _logout() {
     const { logoutUser } = this.props;
     logoutUser();
+  }
+
+  _onRefresh() {
+    this.setState({show: !this.state.show, refreshing: false});
   }
 
   render() {
@@ -87,14 +89,15 @@ class Home extends React.Component {
       .chain(events)
       .groupBy('code')
       .value();
-
     // Map
+    console.log(_.keys(showEvents));
     const eventElems = _.map(showEvents, (value, key, index) => {
       const lecturesToday = _
         .chain(value)
         .filter( (event) => event.type === 'lecture' && event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(1, 'day'))
         .map( (event, index) => {
-          return (<TouchableOpacity key={ index } onPress={ Actions.spaceMap }>
+          console.log(key);
+          return (<TouchableOpacity key={ `${key}${index}` } onPress={ Actions.spaceMap }>
             <CalendarEvent rowData={ {
               type: event.type,
               start: event.startTime,
@@ -108,9 +111,9 @@ class Home extends React.Component {
 
       const exercisesToday = _
         .chain(value)
-        .filter( (event) => event.type === 'exercise' && event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(1, 'week'))
+        .filter( (event) => event.type === 'exercise' && event.date >= moment().startOf('day') && event.date <= moment().startOf('day').add(1, 'day'))
         .map( (event, index) => {
-          return ( <CalendarEvent key={ index } rowData={ {
+          return ( <CalendarEvent key={ `${key}${index}` } rowData={ {
               type: event.type,
               start: event.startTime,
               end: event.endTime,
@@ -122,31 +125,42 @@ class Home extends React.Component {
 
       const noLectures = <Text> No lectures today </Text>;
       const noExercises = <Text> No exercises today </Text>;
-      return (<View key={ index } style={ styles.courseSection }>
+      return (<View key={ `${key}${index}` } style={ styles.courseSection }>
         <Text style={ styles.courseHeader }>{ key }</Text>
         { lecturesToday }
         { exercisesToday }
       </View>);
-      });
+    });
+
+    const logoutButton = this.state.show
+      ? <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }><Text style={ styles.button }>Logout</Text></TouchableOpacity>
+      : [];
 
     return (
       <ScrollView
         style={ styles.scrollViewContainer }
-        contentContainerStyle={ styles.scrollViewContent }
+        scrollEnabled = {true}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh.bind(this)}
+            tintColor= {'transparent'}
+          />
+        }
       >
         <Image style={ styles.headerImage } source={require('../img/mycoursesheader.png')} />
+
+        { logoutButton }
+
         <View style={ styles.headerView }>
           <Text >Todays events and ongoing courses </Text>
         </View>
 
 
-        <View style={ styles.coursesView }>
+
+        <View>
           { eventElems }
         </View>
-
-        <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }>
-          <Text style={ styles.button }>Logout</Text>
-        </TouchableOpacity>
 
       </ScrollView>
     );

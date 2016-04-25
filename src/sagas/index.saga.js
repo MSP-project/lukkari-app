@@ -60,9 +60,10 @@ function* watchNewCourse() {
     // Post new course to user data GET new courses as return value
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
-      yield put(actions.setAllCourses(response.course.code))
+      yield put(actions.getCourses());
+      alert('Course added');
     } catch (error) {
-      alert(error);
+      alert('Course was not found');
     }
 
   }
@@ -111,6 +112,7 @@ function* watchLoginUser() {
     yield put(actions.isLoggedIn());
     // Pass credentials to app state
     yield put(actions.credentials(token, user._id));
+    yield put(actions.clearCourses());
 
   }
 }

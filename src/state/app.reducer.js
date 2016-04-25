@@ -31,8 +31,12 @@ const coursesInitialState = {
 // Reducer for course specific actions
 function courses(state = coursesInitialState, action) {
   switch (action.type) {
+    case types.CLEAR_COURSES:
+      return coursesInitialState;
     case types.UPDATE_COURSE:
-      // TODO: location
+      // TODO: If course already exists
+      //  * Remove duplicates
+      //  * or remove old and add new on top of it
       // All events in one array with
       const allEvents = _
         .chain(action.courseData.events)
@@ -87,7 +91,7 @@ function courses(state = coursesInitialState, action) {
         courses: state.courses.concat([action.courseData])
       });
     case types.SET_ALL_COURSES:
-      return [action.newCourses];
+      return state;
     default:
       return state;
   }
@@ -136,6 +140,8 @@ function mapData(state = mapInitialState, action) {
         id: 'Route'
       }]);
       return Object.assign({}, state, state.overlays = newOverlay);
+    case types.REMOVE_ROUTE:
+      return Object.assign({}, state, state.overlays = []);
     case types.COURSE_MAP:
       return state;
     case types.INIT_MAP:

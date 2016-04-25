@@ -45,6 +45,12 @@ export function updateCourses() {
   };
 }
 // SET courses with list
+export function clearCourses() {
+  return {
+    type: types.CLEAR_COURSES
+  }
+}
+
 export function setAllCourses(newCourses) {
   return {
     type: types.SET_ALL_COURSES,
@@ -80,6 +86,12 @@ export function addRoute(coordinates) {
   return {
     type: types.ADD_ROUTE,
     coordinates
+  }
+}
+
+export function removeRoute() {
+  return {
+    type: types.REMOVE_ROUTE
   }
 }
 

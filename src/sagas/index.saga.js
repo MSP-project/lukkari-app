@@ -1,7 +1,7 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
 import * as actions from '../state/app.action';
-import { get, post } from '../utils/api';
+import { get, post, getMessageFromError } from '../utils/api';
 import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
 import { Actions } from 'react-native-router-flux';
@@ -19,7 +19,6 @@ function* addMessage(message, delayAmount = 3000) {
 }
 
 function* authorizedNetworkCall(method, path, data, token) {
-  // TODO: Do something fun, if the status code is not 200
   try {
     const response = yield call(method, path, data, token);
     if (response.status === 401) {
@@ -36,7 +35,10 @@ function* getCourseData(courseCode, token) {
     const courseData = yield call(authorizedNetworkCall, get, `course/${courseCode}`, token);
     yield put(actions.updateCourseData(courseData));
   } catch (error) {
-    throw error
+    const errorMessage = getMessageFromError(error, 'Unable to get fetch course data');
+
+    // Put error message to message store
+    yield addMessage({ type: 'error', content: errorMessage });
   }
 }
 
@@ -74,14 +76,11 @@ function* watchNewCourse() {
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
       yield put(actions.setAllCourses(response.course.code))
-      yield put(actions.addMessage({
+      yield addMessage({
         type: 'success',
-        content: 'Course added successfully!',
-      }));
-      // Show message for 3 seconds
-      yield call(delay, 3000);
-      yield put(actions.clearMessage());
-      // yield put(actions.navigate('calendar'));
+        content: 'Course added successfully!'
+      });
+      // TODO: yield put(actions.navigate('calendar'));
     } catch (error) {
       yield addMessage({
         type: 'error',
@@ -111,15 +110,24 @@ function* watchIsLoggedIn() {
 function* watchRegisterUser() {
   while (true) {
     const { username, password } = yield take(types.REGISTER_USER);
-    // Register and get token from back-end
-    const { body } = yield call(post, '/register', { username, password });
-    const { token, user } = body;
-    // Store token to asyncStorage
-    yield call(addSession, token, user._id);
-    // Send confirmation for redirection
-    yield put(actions.isLoggedIn());
-    // Pass credentials to app state
-    yield put(actions.credentials(token, user._id));
+
+    try {
+      // Register and get token from back-end
+      const { body } = yield call(post, '/register', { username, password });
+
+      const { token, user } = data;
+      // Store token to asyncStorage
+      yield call(addSession, token, user._id);
+      // Send confirmation for redirection
+      yield put(actions.isLoggedIn());
+      // Pass credentials to app state
+      yield put(actions.credentials(token, user._id));
+    } catch(error) {
+      const errorMessage = getMessageFromError(error, 'Unable to register new user');
+
+      // Put error message to message store
+      yield addMessage({ type: 'error', content: errorMessage });
+    }
   }
 }
 
@@ -136,12 +144,12 @@ function* watchLoginUser() {
       yield put(actions.isLoggedIn());
       // Pass credentials to app state
       yield put(actions.credentials(token, user._id));
-    } catch(e) {
-      console.log(e);
-      yield addMessage({
-        type: 'error',
-        content: 'Could not login with the given credentials',
-      });
+    } catch(error) {
+      console.log(error);
+      const errorMessage = getMessageFromError(error, 'Could not login with the given credentials');
+
+      // Put error message to message store
+      yield addMessage({ type: 'error', content: errorMessage });
     }
 
 

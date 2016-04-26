@@ -29,6 +29,9 @@ sdk.dir=<path/to/android-sdk>
 ## Run tests
 `npm run test`
 
+## Link (existing) packages with rnpm
+`$ rnpm link`
+
 ## Problems?
 #### Packages missing (IF Symbol, see next chapter)
 NPM is good, but sometimes somethings strange happens and it hasn't loaded all the packages or it can't handle them properly. To fix this remove node_modules in root folder with:  

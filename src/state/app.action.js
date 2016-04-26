@@ -38,6 +38,7 @@ export function getCourses() {
     type: types.GET_ALL_COURSES,
   };
 }
+
 // GET courses from server
 export function updateCourses() {
   return {
@@ -66,10 +67,25 @@ export function allCourseDataReceived() {
 
 export function updateCourseData(courseData) {
   return {
-    type: types.UPDATE_COURSE,
+    type: types.UPDATE_COURSES,
     courseData
   }
 }
+
+export function removeCourse(courseCode) {
+  return {
+    type: types.REMOVE_COURSE,
+    courseCode
+  }
+}
+
+export function setCoursesLoadingStatus(loadingStatus) {
+  return {
+    type: types.SET_COURSES_LOADING,
+    loadingStatus,
+  };
+}
+
 
 /********************************
 * "All map" related actions *

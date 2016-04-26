@@ -133,46 +133,44 @@ class Login extends React.Component {
   render() {
     const verifyPass = this.state.isNewUser ? this._getVerifyPassBlock() : {};
     return (
-      <View style={ styles.flex }>
-        <View style={ styles.container }>
-          <Text style={ this.state.usernameDublicate ? styles.loginWarning : null }>Username:</Text>
-          <TextInput
-            style={ [styles.textInput, styles.loginElement] }
-            onChangeText={ this._updateUsername }
-            autoCapitalize="none"
-            autoCorrect={ false }
-          />
-          <Text>Password:</Text>
-          <TextInput
-            style={ [styles.textInput, styles.loginElement] }
-            onChangeText={ this._updatePassword }
-            autoCapitalize="none"
-            autoCorrect={ false }
-            secureTextEntry={ true }
-          />
-
-          { verifyPass.header }
-          { verifyPass.textInput }
-
-          <Text>{this.state.username}</Text>
-          <Text>{this.state.password}</Text>
-
-          <View style={ [styles.newUserSwitchContainer, styles.loginElement] }>
-            <Text style={ styles.switchLabel }>Are you a new user?</Text>
-            <Switch
-              onValueChange={(value) => this._isNewUser(value)}
-              value={this.state.isNewUser}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={ styles.buttonContainer }
-            onPress={ this._handleLogin }
-          >
-            <Text style={ styles.button }>{this.state.isNewUser ? "Register" : "Login"}</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={ styles.container }>
         <Message/>
+        <Text style={ this.state.usernameDublicate ? styles.loginWarning : null }>Username:</Text>
+        <TextInput
+          style={ [styles.textInput, styles.loginElement] }
+          onChangeText={ this._updateUsername }
+          autoCapitalize="none"
+          autoCorrect={ false }
+        />
+        <Text>Password:</Text>
+        <TextInput
+          style={ [styles.textInput, styles.loginElement] }
+          onChangeText={ this._updatePassword }
+          autoCapitalize="none"
+          autoCorrect={ false }
+          secureTextEntry={ true }
+        />
+
+        { verifyPass.header }
+        { verifyPass.textInput }
+
+        <Text>{this.state.username}</Text>
+        <Text>{this.state.password}</Text>
+
+        <View style={ [styles.newUserSwitchContainer, styles.loginElement] }>
+          <Text style={ styles.switchLabel }>Are you a new user?</Text>
+          <Switch
+            onValueChange={(value) => this._isNewUser(value)}
+            value={this.state.isNewUser}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={ styles.buttonContainer }
+          onPress={ this._handleLogin }
+        >
+          <Text style={ styles.button }>{this.state.isNewUser ? "Register" : "Login"}</Text>
+        </TouchableOpacity>
       </View>
     );
   }

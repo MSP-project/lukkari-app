@@ -5,8 +5,9 @@ export const UPDATE_EVENT = 'UPDATE_EVENT';
 export const GET_COURSE_DATA = 'GET_COURSE_DATA';
 export const SET_COURSE_DATA = 'SET_COURSE_DATA';
 export const ADD_COURSE_SAGA = 'ADD_COURSE_SAGA';
-export const UPDATE_COURSE = 'UPDATE_COURSE';
+export const UPDATE_COURSES = 'UPDATE_COURSES';
 export const COURSES_LOAD_FINNISHED = 'COURSES_LOAD_FINNISHED';
+export const REMOVE_COURSE = 'REMOVE_COURSE';
 
 // Courses action types
 export const CLEAR_COURSES = 'CLEAR_COURSES';
@@ -14,6 +15,7 @@ export const GET_ALL_COURSES = 'GET_ALL_COURSES';
 export const UPDATE_ALL_COURSES = 'UPDATE_ALL_COURSES';
 export const SHOW_ALL_COURSES = 'SHOW_ALL_COURSES';
 export const SET_ALL_COURSES = 'SET_ALL_COURSES';
+export const SET_COURSES_LOADING = 'SET_COURSES_LOADING';
 
 // Map action types
 export const ADD_ROUTE = 'ADD_ROUTE';

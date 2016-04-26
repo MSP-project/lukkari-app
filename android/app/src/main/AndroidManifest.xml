@@ -2,6 +2,13 @@
     package="com.mspapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <uses-library android:name="com.google.android.maps" />
+    <meta-data
+           android:name="com.google.android.geo.API_KEY"
+           android:value="your api keys here"/>
 
     <application
       android:allowBackup="true"

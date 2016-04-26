@@ -19,10 +19,15 @@ class mspApp extends React.Component {
 
   render() {
     const store = configureStore();
-    return <Provider store={store}>{this.factory}</Provider>;
+    return <Provider store={store}>
+      <View>
+        <AppView />
+      </View>
+    </Provider>;
   }
 
   factory() {
+    console.log(AppView);
     return(
       <AppView />
     );

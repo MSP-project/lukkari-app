@@ -119,7 +119,8 @@ function courses(state = coursesInitialState, action) {
       return Object.assign({}, state, {
         calendarFormat,
         allEvents,
-        courses: state.courses.concat([action.courseData])
+        courses: state.courses.concat([action.courseData]),
+        isFetching: false
       });
     case types.SET_ALL_COURSES:
       // TODO: implement

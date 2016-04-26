@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     marginBottom: 60
   },
+  scrollViewContent: {
+  },
   headerView: {
     alignItems: 'center',
     padding: 20,
@@ -64,34 +66,22 @@ const styles = StyleSheet.create({
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    const { getCourses } = props;
-    getCourses();
 
-    this._logout = this._logout.bind(this);
-    this.state = {
-      refreshing: false,
-      show: false
-    };
-  }
-
-  _logout() {
-    const { logoutUser } = this.props;
-    logoutUser();
   }
 
   _onRefresh() {
-    this.setState({show: !this.state.show, refreshing: false});
+    const { getCourses } = this.props;
+    getCourses();
   }
 
   render() {
-    const { events } = this.props;
-
+    const { events, isFetching } = this.props;
     const showEvents = _
       .chain(events)
       .groupBy('code')
       .value();
     // Map
-    console.log(_.keys(showEvents));
+    console.log(isFetching);
     const eventElems = _.map(showEvents, (value, key, index) => {
       const lecturesToday = _
         .chain(value)
@@ -133,31 +123,22 @@ class Home extends React.Component {
       </View>);
     });
 
-    const logoutButton = this.state.show
-      ? <TouchableOpacity onPress={ this._logout } style={ [styles.buttonContainer] }><Text style={ styles.button }>Logout</Text></TouchableOpacity>
-      : [];
-
     return (
       <ScrollView
         style={ styles.scrollViewContainer }
-        scrollEnabled = {true}
+        scrollEnabled = { true }
         refreshControl={
           <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh.bind(this)}
-            tintColor= {'transparent'}
+            refreshing={ isFetching }
+            onRefresh={ this._onRefresh.bind(this) }
           />
         }
       >
         <Image style={ styles.headerImage } source={require('../img/mycoursesheader.png')} />
 
-        { logoutButton }
-
         <View style={ styles.headerView }>
           <Text >Todays events and ongoing courses </Text>
         </View>
-
-
 
         <View>
           { eventElems }
@@ -173,7 +154,8 @@ Home.propTypes = propTypes;
 export default connect(
   state => ({
     events: state.courses.allEvents,
-    courses: state.courses.courses
+    courses: state.courses.courses,
+    isFetching: state.courses.isFetching
   }),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)

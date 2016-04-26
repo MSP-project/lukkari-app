@@ -46,6 +46,7 @@ function* watchCourses() {
   while (true) {
     // Catch action dispatch
     yield take(types.GET_ALL_COURSES);
+    yield put(actions.setCoursesLoadingStatus(true));
     // Get session
     const { token, uid } = yield call(getSession);
     try {

@@ -101,7 +101,7 @@ class AppView extends React.Component {
         </TouchableOpacity>
       );
     }
-    if (title !== 'Settings') {
+    if (title !== 'Settings' && title !== 'Login') {
       settingBtn = (
         <TouchableOpacity
           onPress={ Actions.settings }

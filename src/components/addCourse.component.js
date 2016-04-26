@@ -6,6 +6,7 @@ import * as actions from '../state/app.action';
 
 // Components
 import Message from './message.component';
+import Spinner from './spinner.component';
 
 const {
   StyleSheet,
@@ -61,8 +62,11 @@ class AddCourse extends React.Component {
   }
 
   _addCourse() {
-    const { addCourse } = this.props;
-    addCourse(this.state.courseCode);
+    const { addCourse, loading } = this.props;
+    if (!loading) {
+      addCourse(this.state.courseCode);
+      this.setState({ courseCode: '' });
+    }
   }
 
   _updateCourseCode(courseCode) {
@@ -71,29 +75,35 @@ class AddCourse extends React.Component {
 
   // TODO: how to put message component on top of the view?
   render() {
+    const { loading } = this.props;
     return (
-      <View style={ styles.flex }>
-        <View style={ styles.container }>
-          <Text>Type in the course identifier:</Text>
-          <TextInput
-            style={ styles.textInput }
-            onChangeText={ this._updateCourseCode }
-          />
-          <TouchableOpacity
-            style={ styles.buttonContainer }
-            onPress={ this._addCourse }
-          >
-            <Text style={ styles.button }>Add</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={ styles.container }>
         <Message/>
+        <Text>Type in the course identifier:</Text>
+        <TextInput
+          style={ styles.textInput }
+          onChangeText={ this._updateCourseCode }
+          value={ this.state.courseCode }
+        />
+        <TouchableOpacity
+          style={ styles.buttonContainer }
+          onPress={ this._addCourse }
+        >
+          {loading
+            ? <Spinner spinnerSize='small' spinnerColor='#fff'/>
+            : <Text style={ styles.button }>Add</Text>
+          }
+
+        </TouchableOpacity>
       </View>
     );
   }
 }
 
 export default connect(
-  state => ({}),
+  state => ({
+    loading: state.courses.isFetching,
+  }),
   dispatch => ({
     ...bindActionCreators(actions, dispatch)
   })

@@ -21,6 +21,12 @@ const styles = StyleSheet.create({
   }
 });
 
+const ds = new ListView.DataSource({
+  getSectionData: (dataBlob, sectionID) => dataBlob[sectionID],
+  getRowData: (dataBlob, sectionID, rowID) => dataBlob[sectionID + ':' + rowID],
+  rowHasChanged: (r1, r2) => r1 !== r2,
+  sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+});
 
 class Calendar extends React.Component {
   constructor(props) {
@@ -28,15 +34,28 @@ class Calendar extends React.Component {
 
     const { calendarData } = props;
 
-    const ds = new ListView.DataSource({
-      getSectionData: (dataBlob, sectionID) => dataBlob[sectionID],
-      getRowData: (dataBlob, sectionID, rowID) => dataBlob[sectionID + ':' + rowID],
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-    });
     this.state = {
-      dataSource: ds.cloneWithRowsAndSections(calendarData.dataBlob, calendarData.sections, calendarData.rows)
+      dataSource: ds.cloneWithRowsAndSections(
+        calendarData.dataBlob,
+        calendarData.sections,
+        calendarData.rows
+      )
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const prevCalData = this.props.calendarData;
+    const newCalData = nextProps.calendarData;
+
+    if (Object.keys(prevCalData.dataBlob).length !==
+        Object.keys(newCalData.dataBlob).length) {
+      const newDS = ds.cloneWithRowsAndSections(
+        newCalData.dataBlob,
+        newCalData.sections,
+        newCalData.rows
+      );
+      this.setState({ dataSource: newDS });
+    }
   }
 
   _renderSectionHeader(sectionData) {

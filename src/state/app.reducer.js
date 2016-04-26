@@ -1,9 +1,83 @@
 import { combineReducers } from 'redux';
 import _ from 'lodash';
 import moment from 'moment';
-
 import * as types from './actiontypes';
 
+
+/* /////////////////////// HELPER FUCTIONS ////////////////////////////////// */
+function getEventsGroupedByDate(events) {
+  const eventsGroupedByDate = _
+    .chain(events)
+    .filter( (event) => event.date >= moment().startOf('day'))
+    .groupBy('date')
+    .map( (value) => value )
+    .value();
+  return eventsGroupedByDate;
+}
+
+function reduceCourseEvents(courseData, currState) {
+  // TODO: If course already exists
+  //  * Remove duplicates
+  //  * or remove old and add new on top of it
+
+  const allEvents = _
+    .chain(courseData.events)
+    .map( (event) => event.subEvents
+      .map( (subEvent) => Object.assign({},
+        _.omit(event, 'subEvents'),
+        subEvent, courseData.course,
+        { date: moment(subEvent.date, ['DD.MM.YY', 'MM-DD-YYYY']) })))
+    .flatten()
+    .concat(currState.allEvents)
+    .sortBy(['date', 'startTime'])
+    .value();
+
+  const calendarFormat = getCalendarFormat(allEvents);
+
+  return { allEvents, calendarFormat };
+}
+
+function getCalendarFormat(events) {
+  // List of events grouped to nested array based on date
+  const eventsGroupedByDate = getEventsGroupedByDate(events);
+
+  const calendarFormatObj = {
+    dataBlob: {},
+    sections: eventsGroupedByDate.map( (section, index) => `SectionID${index}` ),
+    rows: eventsGroupedByDate.map( (section) => section.map( (row, index) => `RowID${index}`))
+  };
+
+  const calendarFormat = eventsGroupedByDate
+    .reduce( (obj, section, index) => {
+      // Section header
+      const sectionObj = { [`SectionID${index}`]: { date: moment(section[0].date).format('dddd, MMMM Do YYYY') } };
+
+      // All events in one section
+      const itemObj = section.reduce( (itemPrev, itemCurr, itemIndex, arr ) => {
+        const eventObj = {
+          type: itemCurr.type,
+          courseCode: itemCurr.code,
+          courseName: itemCurr.name,
+          start: itemCurr.startTime,
+          end: itemCurr.endTime,
+          location: itemCurr.locations,
+          last: (arr.length - 1) === itemIndex ? true : false
+        };
+
+        return Object.assign({}, itemPrev, { [`SectionID${index}:RowID${itemIndex}`]: eventObj })
+      }, sectionObj)
+
+      // Header and items combined with previous
+      return Object.assign({}, obj, { dataBlob: Object.assign({}, obj.dataBlob, itemObj) });
+    }, calendarFormatObj);
+
+    return calendarFormat;
+}
+/* ////////////////////////////////////////////////////////////////////////// */
+
+
+
+/* /////////////////////// REDUCERS ///////////////////////////////////////// */
 const eventsInitialState = [];
 
 // Reducer for event specific actions.
@@ -33,65 +107,34 @@ function courses(state = coursesInitialState, action) {
   switch (action.type) {
     case types.CLEAR_COURSES:
       return coursesInitialState;
-    case types.UPDATE_COURSE:
-      // TODO: If course already exists
-      //  * Remove duplicates
-      //  * or remove old and add new on top of it
-      // All events in one array with
-      const allEvents = _
-        .chain(action.courseData.events)
-        .map( (event) => event.subEvents
-          .map( (subEvent) => Object.assign({},
-            _.omit(event, 'subEvents'),
-            subEvent, action.courseData.course,
-            { date: moment(subEvent.date, ['DD.MM.YY', 'MM-DD-YYYY']) })))
-        .flatten()
-        .concat(state.allEvents)
-        .sortBy(['date', 'startTime'])
-        .value();
+    case types.SET_COURSES_LOADING:
+    return Object.assign({}, state, {
+      isFetching: action.loadingStatus,
+    });
+    case types.UPDATE_COURSES:
+      const { courseData } = action;
+      const { calendarFormat, allEvents } = reduceCourseEvents(courseData, state);
 
-      // List of events grouped to nested array based on date
-      const eventsGroupedByDate = _
-        .chain(allEvents)
-        .filter( (event) => event.date >= moment().startOf('day'))
-        .groupBy('date')
-        .map( (value) => value )
-        .value();
-
-      const calendarFormatObj = {
-        dataBlob: {},
-        sections: eventsGroupedByDate.map( (section, index) => `SectionID${index}` ),
-        rows: eventsGroupedByDate.map( (section) => section.map( (row, index) => `RowID${index}`))
-      };
-
-      const calendarFormat = eventsGroupedByDate
-        .reduce( (obj, section, index) => {
-          // Section header
-          const sectionObj = { [`SectionID${index}`]: { date: moment(section[0].date).format('dddd, MMMM Do YYYY') } };
-          // All events in one section
-          const itemObj = section.reduce( (itemPrev, itemCurr, itemIndex, arr ) => {
-            const eventObj = {
-              type: itemCurr.type,
-              courseCode: itemCurr.code,
-              courseName: itemCurr.name,
-              start: itemCurr.startTime,
-              end: itemCurr.endTime,
-              location: itemCurr.locations,
-              last: (arr.length - 1) === itemIndex ? true : false
-            };
-            return Object.assign({}, itemPrev, { [`SectionID${index}:RowID${itemIndex}`]: eventObj })
-          }, sectionObj)
-          // Header and items combined with previous
-          return Object.assign({}, obj, { dataBlob: Object.assign({}, obj.dataBlob, itemObj) });
-        }, calendarFormatObj);
       // Return new state
       return Object.assign({}, state, {
-        calendarFormat: calendarFormat,
-        allEvents: allEvents,
+        calendarFormat,
+        allEvents,
         courses: state.courses.concat([action.courseData])
       });
     case types.SET_ALL_COURSES:
+      // TODO: implement
+      // but is this needed?
       return state;
+    case types.REMOVE_COURSE:
+      const newCourses = state.courses.filter((x) => x.course.code !== action.courseCode);
+      const newAllEvents = state.allEvents.filter((x) => x.code !== action.courseCode);
+      const newCalendarFormat = getCalendarFormat(newAllEvents);
+
+      return Object.assign({}, state, {
+        courses: newCourses,
+        allEvents: newAllEvents,
+        calendarFormat: newCalendarFormat,
+      });
     default:
       return state;
   }

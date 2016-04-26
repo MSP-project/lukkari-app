@@ -8,17 +8,20 @@ import * as actions from '../state/app.action';
 import Calendar from './calendar.view';
 import SpaceView from './space.view';
 import Home from './home.view';
+import Settings from './settings.view';
 
 import TabIcon from '../components/tabicon.component';
 import AddCourse from '../components/addCourse.component';
 import Login from '../components/login.component';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
 const {
   StyleSheet,
   TouchableOpacity,
   Text,
-  PropTypes
+  PropTypes,
+  View,
 } = React;
 
 const propTypes = {
@@ -39,15 +42,19 @@ const styles = StyleSheet.create({
   backButtonStyle: {
     tintColor: 'white'
   },
-  barRightButton: {
-    paddingLeft: 40,
-    paddingBottom: 6,
+  barRightButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
+  barRightButton: {
+    paddingLeft: 12,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   barRightButtonText: {
     color: 'white',
-    marginTop: 1,
+    marginTop: 5,
     marginRight: 10,
     fontSize: 30,
     fontWeight: '300'
@@ -77,16 +84,41 @@ class AppView extends React.Component {
 
   _renderRightButton() {
     const { title } = this.props;
+    const addIcon = <Icon name='ios-plus-empty' size={30} color='#fff'/>
+    const settingsIcon = <Icon name='gear-a' size={30} color='#fff' />;
+
+    let addCourseBtn;
+    let settingBtn;
     if (title === 'Home') {
-      return (
+      addCourseBtn = (
         <TouchableOpacity
           onPress={ Actions.addCourse }
           style={ styles.barRightButton }
         >
-          <Text style={ styles.barRightButtonText }>+</Text>
+          <Text style={ styles.barRightButtonText }>
+            {addIcon}
+          </Text>
         </TouchableOpacity>
       );
     }
+    if (title !== 'Settings') {
+      settingBtn = (
+        <TouchableOpacity
+          onPress={ Actions.settings }
+          style={ styles.barRightButton }
+        >
+          <Text style={ styles.barRightButtonText }>
+            {settingsIcon}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+    return (
+      <View style={ styles.barRightButtons }>
+        {settingBtn}
+        {addCourseBtn}
+      </View>
+    );
   }
 
   render() {
@@ -115,6 +147,14 @@ class AppView extends React.Component {
             <Route schema="tab" name="calendar" title="Calendar" component={ Calendar } />
           </Router>
         </Route>
+        <Route
+          wrapRouter
+          hideNavBar={ false }
+          schema="default"
+          name="settings"
+          title="Settings"
+          component={ Settings }
+        />
         <Route
           wrapRouter
           hideNavBar={ false }

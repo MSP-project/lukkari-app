@@ -55,7 +55,19 @@ export async function put(path, data, token='') {
   };
 
   const response = await request(path, options);
+  return response;
+}
 
+export async function del(path, token='') {
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+  };
+
+  const response = await request(path, options);
   return response;
 }
 
@@ -71,7 +83,6 @@ export async function post(path, data, token='') {
   };
 
   const response = await request(path, options);
-
   return response;
 }
 

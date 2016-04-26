@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { clearMessage } from '../state/app.action';
+
+import Overlay from 'react-native-overlay';
 
 const {
   StyleSheet,
@@ -11,11 +12,16 @@ const {
   TouchableOpacity,
   TextInput,
   Animated,
+  Platform,
 } = React;
+
+// TODO what is androids navbar height?
+const navbarHeight = Platform.OS === 'ios' ? 64 : 50;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    marginTop: navbarHeight,
+    padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -25,10 +31,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   error: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgba(255, 10, 10, 0.6)',
   },
   success: {
-    backgroundColor: 'green',
+    backgroundColor: 'rgba(0, 167, 0, 0.6)',
   },
   btnText: {
     color: 'white',
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
 
 
 const propTypes = {
-  messages: PropTypes.object.isRequired,
+  message: PropTypes.object.isRequired,
   clearMessage: PropTypes.func.isRequired,
 }
 
@@ -46,13 +52,13 @@ class Message extends Component {
     super(props);
 
     this.state = {
-      slideAnim: new Animated.Value(0),
+      fadeAnim: new Animated.Value(0),
     }
   }
 
   componentDidMount() {
     Animated.timing(
-      this.state.slideAnim,
+      this.state.fadeAnim,
       { toValue: 1 }
     ).start();
   }
@@ -68,24 +74,19 @@ class Message extends Component {
       : styles.success;
 
 
-    const transform = {
-      transform: [{
-        translateY: this.state.slideAnim.interpolate({
-           inputRange: [0, 1],
-           outputRange: [100, 0]
-         }),
-       }],
-     };
-
     return (
-      <Animated.View style={ [styles.container, msgStyle, transform] }>
-        <TouchableOpacity
-          style={ styles.btnContainer }
-          onPress={ this.props.clearMessage }
+      <Overlay isVisible={!!this.props.message.content} aboveStatusBar={false}>
+        <Animated.View
+          style={[styles.container, msgStyle, {opacity: this.state.fadeAnim}]}
         >
-          <Text style={ styles.btnText }>{message.content}</Text>
-        </TouchableOpacity>
-      </Animated.View>
+          <TouchableOpacity
+            style={ styles.btnContainer }
+            onPress={ this.props.clearMessage }
+          >
+            <Text style={ styles.btnText }>{message.content}</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </Overlay>
     );
   }
 }

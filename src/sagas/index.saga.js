@@ -1,7 +1,7 @@
 import { take, put, call, fork } from 'redux-saga';
 import * as types from '../state/actiontypes';
 import * as actions from '../state/app.action';
-import { get, post, getMessageFromError } from '../utils/api';
+import { get, post, del, getMessageFromError } from '../utils/api';
 import { getDirectionCoordinates } from '../utils/googleAPI';
 import { isUserAuthenticated, addSession, removeSessionToken, getSession } from '../utils/storage';
 import { Actions } from 'react-native-router-flux';
@@ -51,10 +51,14 @@ function* watchCourses() {
     try {
       // Get all courses that user has added
       const courses = yield call(authorizedNetworkCall, get, `user/${uid}/courses`, token);
+
+      // Clear possible old courses (eg. when logout => login again)
+      yield put(actions.clearCourses());
+
       // Fetch course related data for every course
       // Wait for every call to finnish
       if (courses.length) {
-        yield courses.map( (course) => call(getCourseData, course, token));
+        yield courses.map( (courseCode) => call(getCourseData, courseCode, token));
       }
     } catch (error) {
       alert(error);
@@ -70,25 +74,53 @@ function* watchNewCourse() {
     // Catch action dispatch
     //TODO: Make sure that courseCode is always capital
     const { courseCode } = yield take(types.ADD_COURSE_SAGA);
+    // Set isFetching to true
+    yield put(actions.setCoursesLoadingStatus(true));
     // Get session
     const { token, uid } = yield call(getSession);
     // Post new course to user data GET new courses as return value
     try {
       const response = yield call(authorizedNetworkCall, post, `/user/${uid}/courses/${courseCode}`, {}, token);
 
-      yield put(actions.setAllCourses(response.course.code))
-      yield addMessage({
-        type: 'success',
-        content: 'Course added successfully!'
-      });
+      yield call(getCourseData, response.course.code);
+
+      yield put(actions.setCoursesLoadingStatus(false));
+      yield addMessage({ type: 'success', content: 'Course added successfully!' });
       // TODO: yield put(actions.navigate('calendar'));
     } catch (error) {
-      yield addMessage({
-        type: 'error',
-        content: 'Could not add new course. Check the course code!',
-      });
-    }
+      const errorMessage = getMessageFromError(error, 'Could not add new course. Check the course code!');
 
+      // Put error message to message store
+      yield put(actions.setCoursesLoadingStatus(false));
+      yield addMessage({ type: 'error', content: errorMessage });
+    }
+  }
+}
+
+function* watchRemoveCourse(getState, action) {
+  while (true) {
+    // Catch action dispatch
+    const { courseCode } = yield take(types.REMOVE_COURSE);
+    // Set isFetching to true
+    yield put(actions.setCoursesLoadingStatus(true));
+    // Get session
+    const { token, uid } = yield call(getSession);
+    // Post new course to user data GET new courses as return value
+    try {
+      const currentState = getState();
+      const response = yield call(authorizedNetworkCall, del, `/user/${uid}/courses/${courseCode}`, token);
+
+      yield put(actions.removeCourse());
+      yield put(actions.setCoursesLoadingStatus(false));
+      yield addMessage({ type: 'success', content: 'Course removed successfully!' });
+    } catch (error) {
+      console.log(error);
+      const errorMessage = getMessageFromError(error, 'Could not remove course.');
+
+      yield put(actions.setCoursesLoadingStatus(false));
+      // Put error message to message store
+      yield addMessage({ type: 'error', content: errorMessage });
+    }
   }
 }
 
@@ -181,9 +213,10 @@ function* watchNavigate() {
   }
 }
 
-export default function* root() {
+export default function* root(getState) {
   yield fork(watchCourses);
   yield fork(watchNewCourse);
+  yield fork(watchRemoveCourse, getState);
   yield fork(watchGetRoute);
   yield fork(watchIsLoggedIn);
   yield fork(watchRegisterUser);

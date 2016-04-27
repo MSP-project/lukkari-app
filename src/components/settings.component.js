@@ -144,10 +144,16 @@ class Settings extends Component {
           <Text style={ styles.buttonText }>Logout</Text>
         </TouchableOpacity>
 
-        <View style={ styles.settingHeader }>
-          <Text style={ styles.settingHeaderLeft }>Your courses:</Text>
-          <Text style={ styles.settingHeaderRight }>unfollow</Text>
-        </View>
+        {this.props.courses.length
+          ? (
+            <View style={ styles.settingHeader }>
+              <Text style={ styles.settingHeaderLeft }>Your courses:</Text>
+              <Text style={ styles.settingHeaderRight }>unfollow</Text>
+            </View>
+          )
+          : null
+        }
+
         {this.props.courses.map(this._renderCourseItem)}
       </View>
     );

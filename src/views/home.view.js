@@ -27,6 +27,7 @@ const propTypes = {
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
+    marginTop: 64,
     backgroundColor: 'transparent',
     marginBottom: 60
   },
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     marginTop: -100,
-    height: 250,
+    height: 200,
   },
   touchable: {
     alignItems: 'center',
@@ -66,7 +67,11 @@ const styles = StyleSheet.create({
 class Home extends React.Component {
   constructor(props) {
     super(props);
+  }
 
+  componentDidMount() {
+    const { getCourses } = this.props;
+    getCourses();
   }
 
   _onRefresh() {
@@ -131,6 +136,8 @@ class Home extends React.Component {
           <RefreshControl
             refreshing={ isFetching }
             onRefresh={ this._onRefresh.bind(this) }
+            tintColor='#000'
+            title='Loading...'
           />
         }
       >

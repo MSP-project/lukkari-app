@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerImage: {
-    marginTop: -100,
-    height: 200,
+    // marginTop: -100,
+    height: 100,
   },
   touchable: {
     alignItems: 'center',
